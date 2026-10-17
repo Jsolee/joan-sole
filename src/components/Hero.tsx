@@ -2,11 +2,11 @@ import HeroCanvas from "./HeroCanvas";
 
 export default function Hero() {
   return (
-    <section id="top" className="relative flex min-h-[100dvh] flex-col overflow-hidden bg-ink">
+    <section id="top" className="relative flex min-h-[100dvh] flex-col overflow-hidden bg-paper">
       <HeroCanvas />
       <div data-hero-content className="gutter pointer-events-none relative z-10 mt-auto pb-5 pt-32 md:pb-7">
         <div className="mb-8 grid items-end gap-6 md:mb-12 md:grid-cols-12">
-          <p data-intro className="max-w-[30ch] text-xl leading-snug text-bone md:col-span-5 md:text-2xl">
+          <p data-intro className="max-w-[30ch] text-xl leading-snug text-ink md:col-span-5 md:text-2xl">
             I design and build web products end to end: the database policy, the API, and the last easing curve on
             the button.
           </p>

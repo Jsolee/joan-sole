@@ -30,7 +30,7 @@ export default function WorkIndex() {
   );
 
   return (
-    <section id="index" aria-labelledby="index-title" className="relative z-10 bg-ink" ref={root}>
+    <section id="index" aria-labelledby="index-title" className="relative z-10 bg-paper" ref={root}>
       <div className="gutter pb-24 pt-28 md:pb-40 md:pt-44">
         <header className="mb-10 flex items-end justify-between md:mb-16">
           <h2 id="index-title" data-reveal className="font-display text-[clamp(2.5rem,6vw,6rem)] leading-[0.9] tracking-[-0.04em]">
@@ -62,7 +62,7 @@ export default function WorkIndex() {
                     {item.kind}
                     {item.url && <Arrow className="ml-2 inline" />}
                   </span>
-                  <span className="col-span-2 max-w-[56ch] text-[0.95rem] leading-relaxed text-bone/70 md:col-span-4">
+                  <span className="col-span-2 max-w-[56ch] text-[0.95rem] leading-relaxed text-ink/70 md:col-span-4">
                     {item.line}
                   </span>
                   <span className="col-span-2 font-mono text-xs text-mute md:col-span-2">{item.stack}</span>
@@ -79,7 +79,7 @@ export default function WorkIndex() {
         className="pointer-events-none fixed left-0 top-0 z-40 hidden h-[15rem] w-[22rem] md:block"
       >
         <div
-          className="relative h-full w-full overflow-hidden rounded-xl border border-bone/10 transition-[clip-path,opacity] duration-500 ease-[var(--ease-out-expo)]"
+          className="relative h-full w-full overflow-hidden rounded-xl border border-ink/10 transition-[clip-path,opacity] duration-500 ease-[var(--ease-out-expo)]"
           style={{
             clipPath: active === null ? "inset(50% 0 50% 0 round 0.75rem)" : "inset(0 0 0 0 round 0.75rem)",
             opacity: active === null ? 0 : 1,

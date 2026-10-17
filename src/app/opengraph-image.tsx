@@ -15,19 +15,19 @@ export default function Image() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 64,
-          background: "#0f0d0b",
-          backgroundImage: "radial-gradient(#3a3631 1.5px, transparent 1.5px)",
+          background: "#f3f0e8",
+          backgroundImage: "radial-gradient(#d9d3c6 1.5px, transparent 1.5px)",
           backgroundSize: "18px 18px",
-          color: "#f2eee6",
+          color: "#17150f",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 24, color: "#9b9891" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 24, color: "#6b665d" }}>
           <span>joan-sole.com</span>
-          <span style={{ display: "flex", width: 22, height: 22, borderRadius: 22, background: "#f25f33" }} />
+          <span style={{ display: "flex", width: 22, height: 22, borderRadius: 22, background: "#c23b1c" }} />
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <span style={{ fontSize: 168, letterSpacing: -8, lineHeight: 1 }}>Joan Solé</span>
-          <span style={{ fontSize: 34, color: "#9b9891", marginTop: 24 }}>
+          <span style={{ fontSize: 34, color: "#6b665d", marginTop: 24 }}>
             Fullstack developer. Generative AI products, Barcelona.
           </span>
         </div>

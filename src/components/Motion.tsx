@@ -10,11 +10,6 @@ gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
 
 const q = <T extends Element = HTMLElement>(s: string) => gsap.utils.toArray<T>(s);
 
-const markIntroDone = () => {
-  (window as Window & { __introDone?: boolean }).__introDone = true;
-  dispatchEvent(new Event("portfolio:intro"));
-};
-
 // ponytail: one page, one orchestrator. Sections stay server-rendered and opt in through data attributes.
 export default function Motion() {
   useGSAP(() => {
@@ -29,7 +24,6 @@ export default function Motion() {
 
     mm.add("(prefers-reduced-motion: reduce)", () => {
       gsap.set(".preloader", { display: "none" });
-      markIntroDone();
     });
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -39,13 +33,12 @@ export default function Motion() {
       gsap.ticker.add(tick);
       gsap.ticker.lagSmoothing(0);
 
-      intro(lenis);
+      const offs = [intro(lenis), kineticName(), magnetic()];
       reveals();
       scrubWords();
       stackCards();
       parallax();
       marquee();
-      const offs = [kineticName(), magnetic()];
 
       return () => {
         offs.forEach((off) => off?.());
@@ -72,46 +65,67 @@ function seenIntro() {
   return seenCache;
 }
 
+// The ink sheet waits for the WebGL hero, then hands over to it: the hero starts as the same
+// solid ink, opens into a halftone from the centre, and the dotted name settles into real type.
 function intro(lenis: Lenis) {
   const pre = document.querySelector<HTMLElement>(".preloader");
+  const count = pre?.querySelector("[data-count]");
   const chars = SplitText.create("[data-kinetic]", {
-    type: "lines,chars",
+    type: "lines,words,chars",
     mask: "lines",
     linesClass: "line",
     charsClass: "char",
   }).chars;
 
   const seen = seenIntro();
-  const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+  const skip = scrollY > innerHeight * 0.5; // reloaded mid-page: no show
+  lenis.stop();
+  gsap.set(chars, { yPercent: 115 });
+  gsap.set("[data-intro]", { y: 24, opacity: 0 });
+  gsap.set("[data-intro-line]", { scaleX: 0, transformOrigin: "left" });
+  gsap.set("[data-nav]", { opacity: 0 });
 
-  if (pre && !seen) {
-    lenis.stop();
-    const count = pre.querySelector("[data-count]");
-    const dots = pre.querySelectorAll("[data-dot]");
-    const n = { v: 0 };
-    tl.to(n, {
-      v: 100,
-      duration: 1.3,
-      ease: "power2.inOut",
-      onUpdate: () => {
-        if (count) count.textContent = String(Math.round(n.v)).padStart(3, "0");
-      },
-    })
-      .to(dots, { opacity: 1, duration: 0.01, stagger: 1.2 / dots.length }, 0)
-      .to(pre, { clipPath: "inset(0 0 100% 0)", duration: 0.9, ease: "expo.inOut" }, "+=0.1")
-      .add(() => lenis.start(), "-=0.4");
-  } else {
-    if (pre) gsap.set(pre, { display: "none" });
-    lenis.start();
-  }
+  const n = { v: 0 };
+  const showCount = () => {
+    if (count) count.textContent = String(Math.round(n.v)).padStart(3, "0");
+  };
+  const loading = gsap.to(n, { v: 86, duration: 1.4, ease: "power2.out", onUpdate: showCount });
 
-  tl.add(markIntroDone, pre && !seen ? "-=0.5" : 0)
-    .from(chars, { yPercent: 115, duration: 1.4, stagger: 0.045 }, "<")
-    .from("[data-intro]", { y: 24, opacity: 0, duration: 1.2, stagger: 0.08 }, "<0.3")
-    .from("[data-intro-line]", { scaleX: 0, transformOrigin: "left", duration: 1.6 }, "<")
-    .add(() => {
-      if (pre) gsap.set(pre, { display: "none" });
-    });
+  let started = false;
+  const go = () => {
+    if (started) return;
+    started = true;
+    loading.kill();
+    const hero = window.__hero;
+    const len = seen ? 1.3 : 1.9;
+    const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+
+    tl.to(n, { v: 100, duration: seen ? 0.01 : 0.3, ease: "power1.out", onUpdate: showCount });
+    if (hero) {
+      tl.set(pre, { display: "none" })
+        .to(hero, { curtain: 1, duration: len, ease: "power2.inOut" })
+        .to(hero, { scale: 1, duration: len + 0.2, ease: "expo.inOut" }, "<")
+        .to(chars, { yPercent: 0, duration: 1.3, stagger: 0.04 }, `<${len * 0.7}`)
+        .to(hero, { name: 0, duration: 0.8, ease: "power1.inOut" }, "<0.3");
+    } else {
+      tl.to(pre, { clipPath: "inset(0 0 100% 0)", duration: 0.9, ease: "expo.inOut" })
+        .to(chars, { yPercent: 0, duration: 1.3, stagger: 0.04 }, "<0.4")
+        .set(pre, { display: "none" });
+    }
+    tl.to("[data-intro]", { y: 0, opacity: 1, duration: 1.2, stagger: 0.08 }, "<0.2")
+      .to("[data-intro-line]", { scaleX: 1, duration: 1.6 }, "<")
+      .to("[data-nav]", { opacity: 1, duration: 0.8, ease: "power1.out" }, "<")
+      .add(() => lenis.start(), "<");
+    if (skip) tl.progress(1, false);
+  };
+
+  // Let the counter breathe on a first visit, never wait more than three seconds for WebGL.
+  const ready = () => gsap.delayedCall(seen || skip ? 0.05 : 0.7, go);
+  if (window.__hero) ready();
+  else addEventListener("hero:ready", ready, { once: true });
+  gsap.delayedCall(3, go);
+
+  return () => removeEventListener("hero:ready", ready);
 }
 
 // Letters near the cursor stretch on the variable width axis.

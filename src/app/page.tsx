@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Clock from "@/components/Clock";
 import CopyEmail from "@/components/CopyEmail";
 import Hero from "@/components/Hero";
@@ -28,22 +29,15 @@ export default function Home() {
 
 function Preloader() {
   return (
-    <div
-      aria-hidden
-      className="preloader gutter fixed inset-0 z-[70] flex flex-col justify-between bg-ink-2 py-5"
-      style={{ clipPath: "inset(0 0 0 0)" }}
-    >
-      <div className="flex justify-between font-mono text-xs text-mute">
+    <div aria-hidden className="preloader gutter fixed inset-0 z-[70] flex flex-col justify-between bg-ink py-5 font-mono text-xs text-paper/55">
+      <div className="flex justify-between">
         <span>Joan Solé</span>
         <span>Portfolio 2026</span>
       </div>
-      <div className="flex items-end justify-between gap-6">
-        <div className="mb-[0.6em] flex gap-1.5 sm:gap-2">
-          {Array.from({ length: 12 }, (_, i) => (
-            <span key={i} data-dot className="size-1.5 rounded-full bg-signal opacity-15 sm:size-2" />
-          ))}
-        </div>
-        <span data-count className="font-display text-[clamp(5rem,17vw,15rem)] leading-[0.8] tracking-[-0.05em] tabular-nums">
+      <span className="seed absolute left-1/2 top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-signal" />
+      <div className="flex items-end justify-between">
+        <span>Fullstack developer, Barcelona</span>
+        <span data-count className="tabular-nums text-paper">
           000
         </span>
       </div>
@@ -58,7 +52,7 @@ function Nav() {
     ["Contact", "#contact"],
   ];
   return (
-    <header data-nav className="fixed inset-x-0 top-0 z-50 text-bone transition-colors duration-500">
+    <header data-nav className="fixed inset-x-0 top-0 z-50 text-paper transition-colors duration-500">
       <nav aria-label="Main" className="gutter flex items-center justify-between py-5 font-mono text-xs">
         <a href="#top" className="roll">
           <span>Joan Solé</span>
@@ -82,9 +76,27 @@ function Nav() {
 
 function About() {
   return (
-    <section id="about" aria-label="About" className="gutter relative bg-ink pb-28 pt-32 md:pb-40 md:pt-48">
+    <section id="about" aria-label="About" className="gutter relative bg-paper pb-28 pt-32 md:pb-40 md:pt-48">
       <div className="grid gap-10 md:grid-cols-12">
-        <p className="font-mono text-xs text-mute md:col-span-3">(About)</p>
+        <figure data-fade className="md:col-span-3">
+          <div className="group relative aspect-[4/5] w-28 overflow-hidden sm:w-36 md:w-44">
+            <Image
+              src="/portrait.webp"
+              alt="Portrait of Joan Solé"
+              fill
+              sizes="176px"
+              className="object-cover opacity-0 grayscale transition-opacity duration-700 group-hover:opacity-100"
+            />
+            <Image
+              src="/portrait-dots.webp"
+              alt=""
+              fill
+              sizes="176px"
+              className="object-cover transition-opacity duration-700 group-hover:opacity-0"
+            />
+          </div>
+          <figcaption className="mt-3 font-mono text-xs text-mute">(About)</figcaption>
+        </figure>
         <p
           data-scrub-words
           className="font-display text-[clamp(1.75rem,3.7vw,3.75rem)] leading-[1.08] tracking-[-0.03em] md:col-span-9"
@@ -106,7 +118,7 @@ function About() {
         ].map(([k, v], i) => (
           <div key={k} data-fade className={`border-t border-line/70 pt-4 md:col-span-3 ${i === 0 ? "md:col-start-4" : ""}`}>
             <dt className="font-mono text-xs text-mute">{k}</dt>
-            <dd className="mt-2 text-bone/80">{v}</dd>
+            <dd className="mt-2 text-ink/80">{v}</dd>
           </div>
         ))}
       </dl>
@@ -117,14 +129,14 @@ function About() {
 function Marquee() {
   const row = [...marquee, ...marquee];
   return (
-    <div aria-hidden className="overflow-hidden border-y border-line/70 bg-ink py-6 md:py-10">
+    <div aria-hidden className="overflow-hidden border-y border-line/70 bg-paper py-6 md:py-10">
       {(["ltr", "rtl"] as const).map((dir) => (
         <div key={dir} data-marquee={dir} className="flex w-max items-center">
           {row.map((w, i) => (
             <span key={i} className="flex items-center">
               <span
                 className={`font-display px-5 text-[clamp(2.75rem,7.5vw,7rem)] leading-[1.05] tracking-[-0.04em] md:px-8 ${
-                  dir === "rtl" ? "text-transparent [-webkit-text-stroke:1px_var(--color-mute)]" : "text-bone"
+                  dir === "rtl" ? "text-transparent [-webkit-text-stroke:1px_var(--color-mute)]" : "text-ink"
                 }`}
                 style={dir === "rtl" ? undefined : { ["--wdth" as string]: 112 }}
               >
@@ -141,13 +153,13 @@ function Marquee() {
 
 function Capabilities() {
   return (
-    <section id="capabilities" aria-labelledby="cap-title" className="gutter bg-ink pb-24 pt-28 md:pb-36 md:pt-44">
+    <section id="capabilities" aria-labelledby="cap-title" className="gutter bg-paper pb-24 pt-28 md:pb-36 md:pt-44">
       <div className="grid gap-10 md:grid-cols-12">
         <div className="self-start md:sticky md:top-28 md:col-span-4">
           <h2 id="cap-title" data-reveal className="font-display text-[clamp(2.5rem,6vw,6rem)] leading-[0.9] tracking-[-0.04em]">
             What I do
           </h2>
-          <p data-fade className="mt-6 max-w-[34ch] text-bone/70">
+          <p data-fade className="mt-6 max-w-[34ch] text-ink/70">
             Product engineering across the whole stack. I&rsquo;m at my best where interface craft and solid systems
             have to meet.
           </p>
@@ -158,7 +170,7 @@ function Capabilities() {
               <span className="font-mono text-xs leading-9 text-mute">0{i + 1}</span>
               <div>
                 <h3 className="font-display text-[clamp(1.75rem,3vw,2.75rem)] leading-tight tracking-[-0.03em]">{d.title}</h3>
-                <p className="mt-3 max-w-[52ch] text-bone/70">{d.body}</p>
+                <p className="mt-3 max-w-[52ch] text-ink/70">{d.body}</p>
                 <p className="mt-5 font-mono text-xs text-mute">{d.tools.join(" · ")}</p>
               </div>
             </li>
@@ -180,7 +192,7 @@ function Experience() {
     },
   ];
   return (
-    <section id="experience" aria-labelledby="exp-title" className="gutter bg-ink pb-32 md:pb-48">
+    <section id="experience" aria-labelledby="exp-title" className="gutter bg-paper pb-32 md:pb-48">
       <h2 id="exp-title" data-reveal className="font-display mb-10 text-[clamp(2.5rem,6vw,6rem)] leading-[0.9] tracking-[-0.04em] md:mb-16">
         Experience
       </h2>
@@ -191,8 +203,8 @@ function Experience() {
             <span className="font-display text-[clamp(1.6rem,2.8vw,2.6rem)] leading-tight tracking-[-0.03em] md:col-span-4">
               {r.org}
             </span>
-            <span className="text-bone/90 md:col-span-3">{r.role}</span>
-            <span className="text-[0.95rem] text-bone/60 md:col-span-3">{r.note}</span>
+            <span className="text-ink/90 md:col-span-3">{r.role}</span>
+            <span className="text-[0.95rem] text-ink/60 md:col-span-3">{r.note}</span>
           </li>
         ))}
       </ul>
@@ -206,12 +218,12 @@ function Contact() {
     ["GitHub", contact.github],
   ];
   return (
-    <section id="contact" aria-labelledby="contact-title" className="relative overflow-hidden bg-signal text-ink">
+    <section id="contact" aria-labelledby="contact-title" className="relative overflow-hidden bg-signal text-paper">
       <div
         aria-hidden
         className="pointer-events-none absolute -right-[18vw] top-[6vh] size-[80vw] rounded-full opacity-25 md:-right-[6vw] md:size-[46vw]"
         style={{
-          backgroundImage: "radial-gradient(var(--color-ink) 1.6px, transparent 2px)",
+          backgroundImage: "radial-gradient(var(--color-paper) 1.6px, transparent 2px)",
           backgroundSize: "13px 13px",
           maskImage: "radial-gradient(circle at 38% 36%, black 0%, transparent 68%)",
         }}
@@ -244,7 +256,7 @@ function Contact() {
           <ul className="space-y-1 font-mono text-sm md:col-span-3 md:col-start-10">
             {links.map(([label, href]) => (
               <li key={label}>
-                <a href={href} target="_blank" rel="noreferrer" className="group flex items-center justify-between border-t border-ink/25 py-3">
+                <a href={href} target="_blank" rel="noreferrer" className="group flex items-center justify-between border-t border-paper/30 py-3">
                   {label}
                   <Arrow />
                 </a>
@@ -253,7 +265,7 @@ function Contact() {
           </ul>
         </div>
 
-        <footer className="mt-20 flex flex-wrap justify-between gap-3 border-t border-ink/25 pt-5 font-mono text-xs md:mt-24">
+        <footer className="mt-20 flex flex-wrap justify-between gap-3 border-t border-paper/30 pt-5 font-mono text-xs md:mt-24">
           <span>© 2026 Joan Solé</span>
           <span className="flex gap-2">
             Barcelona <Clock />

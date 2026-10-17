@@ -1,10 +1,10 @@
 import Image from "next/image";
 import { featured, type Project } from "@/content";
-import { Ticket } from "./Previews";
+import { Ticket, Traingenio } from "./Previews";
 
 export default function Work() {
   return (
-    <section id="work" aria-labelledby="work-title" className="relative bg-ink">
+    <section id="work" aria-labelledby="work-title" className="relative bg-paper">
       <header className="gutter flex items-end justify-between pb-10 pt-24 md:pb-16 md:pt-32">
         <h2 id="work-title" data-reveal className="font-display text-[clamp(3rem,9vw,9rem)] leading-[0.9] tracking-[-0.04em]">
           Selected work
@@ -28,9 +28,9 @@ function Card({ p, i }: { p: Project; i: number }) {
     <article data-stack-card className="relative md:sticky md:top-0 md:h-[100dvh]" style={{ zIndex: i + 1 }}>
       <div
         data-stack-inner
-        className="relative flex h-full origin-top flex-col overflow-hidden rounded-t-[1.75rem] border-t border-line/70 bg-ink-2 md:rounded-t-[2.5rem]"
+        className="relative flex h-full origin-top flex-col overflow-hidden rounded-t-[1.75rem] border-t border-line/70 bg-paper-2 md:rounded-t-[2.5rem]"
       >
-        <div data-stack-shade className="pointer-events-none absolute inset-0 z-20 bg-ink opacity-0" />
+        <div data-stack-shade className="pointer-events-none absolute inset-0 z-20 bg-paper opacity-0" />
         <div
           aria-hidden
           className="pointer-events-none absolute -right-[20%] -top-[30%] size-[70vmax] rounded-full opacity-[0.13] blur-3xl"
@@ -49,14 +49,14 @@ function Card({ p, i }: { p: Project; i: number }) {
                 {p.title}
               </h3>
             </div>
-            <p className="max-w-[34ch] text-lg leading-snug text-bone/90 md:col-span-4 md:col-start-9 md:text-xl">
+            <p className="max-w-[34ch] text-lg leading-snug text-ink/90 md:col-span-4 md:col-start-9 md:text-xl">
               {p.summary}
             </p>
           </div>
 
           <div className="grid min-h-0 gap-8 md:grid-cols-12 md:gap-10">
             <div className="flex flex-col justify-between gap-8 md:col-span-4 md:max-lg:col-span-5">
-              <ol className="space-y-4 text-[0.95rem] leading-relaxed text-bone/75">
+              <ol className="space-y-4 text-[0.95rem] leading-relaxed text-ink/75">
                 {p.notes.map((n, j) => (
                   <li key={j} className="grid grid-cols-[2rem_1fr] border-t border-line/70 pt-3">
                     <span className="font-mono text-xs leading-6 text-mute">{String(j + 1).padStart(2, "0")}</span>
@@ -66,7 +66,7 @@ function Card({ p, i }: { p: Project; i: number }) {
               </ol>
               <div className="space-y-5">
                 <p className="font-mono text-xs leading-relaxed text-mute">
-                  <span className="text-bone/80">{p.role}</span>
+                  <span className="text-ink/80">{p.role}</span>
                   <br />
                   {p.stack.join(" · ")}
                 </p>
@@ -75,7 +75,7 @@ function Card({ p, i }: { p: Project; i: number }) {
                     href={p.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="press group inline-flex items-center gap-3 rounded-full bg-bone px-5 py-2.5 text-sm font-medium text-ink"
+                    className="press group inline-flex items-center gap-3 rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper"
                   >
                     Visit {new URL(p.url).hostname.replace("www.", "")}
                     <Arrow />
@@ -95,16 +95,16 @@ function Card({ p, i }: { p: Project; i: number }) {
 }
 
 function Media({ p }: { p: Project }) {
-  if (!p.image)
+  if (p.visual)
     return (
       <div data-clip className="absolute inset-0 overflow-hidden rounded-xl border border-line/70 max-md:relative max-md:aspect-[4/3]">
-        <Ticket />
+        {p.visual === "ticket" ? <Ticket /> : <Traingenio />}
       </div>
     );
   return (
     <div
       data-clip
-      className="absolute inset-0 flex flex-col overflow-hidden rounded-xl border border-line/70 bg-ink max-md:relative max-md:aspect-[16/11]"
+      className="absolute inset-0 flex flex-col overflow-hidden rounded-xl border border-line/70 bg-paper max-md:relative max-md:aspect-[16/11]"
     >
       <div className="flex h-9 shrink-0 items-center gap-3 border-b border-line/70 px-4">
         <span className="flex gap-1.5" aria-hidden>
@@ -117,7 +117,7 @@ function Media({ p }: { p: Project }) {
       <div className="relative flex-1 overflow-hidden">
         <div data-parallax="3" className="absolute -inset-y-[4%] inset-x-0">
           <Image
-            src={p.image}
+            src={p.image!}
             alt={`${p.title} homepage`}
             fill
             sizes="(min-width: 768px) 60vw, 100vw"

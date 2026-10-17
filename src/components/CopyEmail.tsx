@@ -20,7 +20,7 @@ export default function CopyEmail({ email }: { email: string }) {
       type="button"
       onClick={copy}
       data-magnetic="0.2"
-      className="press inline-flex items-center rounded-full border border-ink/25 px-5 py-3 font-mono text-sm text-ink transition-colors duration-300 hover:bg-ink hover:text-signal"
+      className="press inline-flex items-center rounded-full border border-paper/40 px-5 py-3 font-mono text-sm text-paper transition-colors duration-300 hover:bg-paper hover:text-signal"
     >
       <span aria-hidden className="relative block h-5 overflow-hidden">
         <span
