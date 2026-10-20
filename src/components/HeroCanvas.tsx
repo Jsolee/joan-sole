@@ -279,9 +279,11 @@ export default function HeroCanvas() {
 
       let raf = 0;
       let visible = true;
+      // The intro always plays out; after it, the footer toggle can freeze the scene.
+      const paused = () => document.documentElement.dataset.motion === "off" && ctl.curtain >= 1 && ctl.name <= 0;
       const loop = (t: number) => {
         render(t);
-        raf = visible && !reduced ? requestAnimationFrame(loop) : 0;
+        raf = visible && !reduced && !paused() ? requestAnimationFrame(loop) : 0;
       };
       const kick = () => {
         if (!raf) raf = requestAnimationFrame(loop);
@@ -297,6 +299,7 @@ export default function HeroCanvas() {
         if (visible) kick();
       };
       document.addEventListener("visibilitychange", onVis);
+      addEventListener("motion:change", kick);
 
       const onMove = (e: PointerEvent) => {
         const r = canvas.getBoundingClientRect();
@@ -335,6 +338,7 @@ export default function HeroCanvas() {
         st.kill();
         removeEventListener("pointermove", onMove);
         document.removeEventListener("visibilitychange", onVis);
+        removeEventListener("motion:change", kick);
         knot.geometry.dispose();
         sceneMat.dispose();
         ditherMat.dispose();

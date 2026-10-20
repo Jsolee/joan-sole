@@ -19,6 +19,7 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 :root {
@@ -58,6 +59,34 @@ body {
 
 .gutter {
   padding-inline: var(--gutter);
+}
+
+/* Web Interface Guidelines: crisp taps, no rubber-banding on desktop, anchors clear the floating nav */
+a,
+button,
+label {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (pointer: fine) {
+  html {
+    overscroll-behavior: none;
+  }
+}
+section[id] {
+  scroll-margin-top: 5rem;
+}
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* Paused by the footer toggle */
+[data-motion="off"] *,
+[data-motion="off"] *::before,
+[data-motion="off"] *::after {
+  animation-play-state: paused !important;
 }
 
 /* Fixed grain: one GPU layer, never repaints while scrolling */
@@ -211,18 +240,12 @@ body {
   transition: transform 550ms var(--ease-out-expo);
 }
 @media (hover: hover) and (pointer: fine) {
+  a:hover > .roll > span,
   .roll:hover > span {
     transform: translateY(-1.4em);
   }
 }
 
-[data-nav] {
-  mix-blend-mode: difference;
-}
-[data-nav].on-signal {
-  mix-blend-mode: normal;
-  color: var(--color-paper);
-}
 
 .seed {
   animation: seed 1.4s var(--ease-in-out-quint) infinite;

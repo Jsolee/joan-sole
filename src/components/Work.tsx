@@ -45,7 +45,7 @@ function Card({ p, i }: { p: Project; i: number }) {
                 <span>{p.kind}</span>
                 <span>{p.year}</span>
               </p>
-              <h3 className="font-display mt-3 text-[clamp(3rem,8.5vw,8.5rem)] font-medium leading-[0.88] tracking-[-0.045em]">
+              <h3 translate="no" className="font-display mt-3 text-[clamp(3rem,8.5vw,8.5rem)] font-medium leading-[0.88] tracking-[-0.045em]">
                 {p.title}
               </h3>
             </div>
@@ -97,14 +97,14 @@ function Card({ p, i }: { p: Project; i: number }) {
 function Media({ p }: { p: Project }) {
   if (p.visual)
     return (
-      <div data-clip className="absolute inset-0 overflow-hidden rounded-xl border border-line/70 max-md:relative max-md:aspect-[4/3]">
+      <div data-clip className="absolute inset-0 overflow-hidden rounded-xl border border-ink/10 shadow-[0_1px_2px_0_rgb(23_21_15/0.06),0_24px_48px_-24px_rgb(23_21_15/0.25)] max-md:relative max-md:aspect-[4/3]">
         {p.visual === "ticket" ? <Ticket /> : <Traingenio />}
       </div>
     );
   return (
     <div
       data-clip
-      className="absolute inset-0 flex flex-col overflow-hidden rounded-xl border border-line/70 bg-paper max-md:relative max-md:aspect-[16/11]"
+      className="absolute inset-0 flex flex-col overflow-hidden rounded-xl border border-ink/10 bg-paper shadow-[0_1px_2px_0_rgb(23_21_15/0.06),0_24px_48px_-24px_rgb(23_21_15/0.25)] max-md:relative max-md:aspect-[16/11]"
     >
       <div className="flex h-9 shrink-0 items-center gap-3 border-b border-line/70 px-4">
         <span className="flex gap-1.5" aria-hidden>

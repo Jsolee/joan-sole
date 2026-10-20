@@ -15,13 +15,6 @@ export default function Motion() {
   useGSAP(() => {
     const mm = gsap.matchMedia();
 
-    ScrollTrigger.create({
-      trigger: "#contact",
-      start: "top 32px",
-      end: "bottom 32px",
-      toggleClass: { targets: "[data-nav]", className: "on-signal" },
-    });
-
     mm.add("(prefers-reduced-motion: reduce)", () => {
       gsap.set(".preloader", { display: "none" });
     });
@@ -32,18 +25,21 @@ export default function Motion() {
       const tick = (t: number) => lenis.raf(t * 1000);
       gsap.ticker.add(tick);
       gsap.ticker.lagSmoothing(0);
+      const w = window as Window & { __lenis?: Lenis };
+      w.__lenis = lenis;
 
-      const offs = [intro(lenis), kineticName(), magnetic()];
+      const offs = [intro(lenis), kineticName(), magnetic(), marquee()];
       reveals();
       scrubWords();
       stackCards();
       parallax();
-      marquee();
+      receipts();
 
       return () => {
         offs.forEach((off) => off?.());
         gsap.ticker.remove(tick);
         lenis.destroy();
+        delete w.__lenis;
       };
     });
   });
@@ -258,9 +254,9 @@ function parallax() {
     });
 }
 
-// Marquee rows speed up and flip direction with scroll velocity.
+// Marquee rows speed up and flip direction with scroll velocity, and stop when motion is paused.
 function marquee() {
-  q("[data-marquee]").forEach((row) => {
+  const loops = q("[data-marquee]").map((row) => {
     const dir = row.dataset.marquee === "rtl" ? 1 : -1;
     const loop = gsap.fromTo(
       row,
@@ -272,12 +268,76 @@ function marquee() {
       start: "top bottom",
       end: "bottom top",
       onUpdate: (self) => {
+        if (loop.paused()) return;
         const boost = 1 + Math.min(Math.abs(self.getVelocity()) / 250, 6);
         gsap.to(loop, { timeScale: boost * self.direction, duration: 0.2, overwrite: true });
         gsap.to(loop, { timeScale: self.direction, duration: 1.2, delay: 0.2, ease: "power2.out" });
       },
     });
+    return loop;
   });
+  const sync = () => {
+    const off = document.documentElement.dataset.motion === "off";
+    loops.forEach((l) => l.paused(off));
+  };
+  sync();
+  addEventListener("motion:change", sync);
+  return () => removeEventListener("motion:change", sync);
+}
+
+// Receipts: counters run from a starting value, cell grids fill in, bars and lines draw.
+function receipts() {
+  const once = (trigger: Element) => ({ trigger, start: "top 85%", once: true });
+
+  q("[data-count-to]").forEach((el) => {
+    const to = Number(el.dataset.countTo);
+    const from = Number(el.dataset.countFrom ?? 0);
+    const decimals = Number(el.dataset.decimals ?? 0);
+    const fmt = new Intl.NumberFormat("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    const n = { v: from };
+    el.textContent = fmt.format(from);
+    gsap.to(n, {
+      v: to,
+      duration: 1.8,
+      ease: "power3.out",
+      scrollTrigger: once(el),
+      onUpdate: () => {
+        el.textContent = fmt.format(n.v);
+      },
+    });
+  });
+
+  q("[data-fill]").forEach((grid) =>
+    gsap.from(grid.querySelectorAll("[data-cell]"), {
+      opacity: 0.1,
+      duration: 0.5,
+      ease: "power1.out",
+      stagger: { amount: 1.2, from: "start" },
+      scrollTrigger: once(grid),
+    }),
+  );
+
+  q("[data-bar]").forEach((bar) =>
+    gsap.fromTo(
+      bar,
+      { scaleX: Number(bar.dataset.barFrom) },
+      { scaleX: Number(bar.dataset.barTo), duration: 1.8, ease: "power3.inOut", scrollTrigger: once(bar) },
+    ),
+  );
+
+  q<SVGPathElement>("[data-draw]").forEach((path, i) =>
+    gsap.fromTo(
+      path,
+      { strokeDasharray: 1, strokeDashoffset: 1 },
+      {
+        strokeDashoffset: 0,
+        duration: 1.4,
+        delay: (i % 2) * 1.2,
+        ease: i % 2 ? "power2.out" : "power1.in",
+        scrollTrigger: once(path),
+      },
+    ),
+  );
 }
 
 function magnetic() {

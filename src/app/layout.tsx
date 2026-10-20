@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 const description =
-  "Fullstack developer in Barcelona building generative AI products. Next.js, Postgres, iOS, and interfaces that feel considered.";
+  "Fullstack developer in Barcelona. I build generative AI products at TheEtailers with Next.js and Postgres.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://joan-sole.com"),
@@ -44,8 +44,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${archivo.variable} ${geist.variable} ${geistMono.variable} antialiased`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem("motion")==="off")document.documentElement.dataset.motion="off"}catch(e){}`,
+          }}
+        />
+      </head>
       <body>
         {children}
         <div className="grain" aria-hidden />

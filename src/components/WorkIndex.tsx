@@ -55,7 +55,7 @@ export default function WorkIndex() {
                   {...(item.url ? { href: item.url, target: "_blank", rel: "noreferrer" } : {})}
                   className="group grid grid-cols-[1fr_auto] items-baseline gap-x-6 gap-y-2 py-5 md:grid-cols-12 md:py-7"
                 >
-                  <span className="font-display text-[clamp(1.75rem,3.6vw,3.25rem)] leading-none tracking-[-0.035em] transition-transform duration-700 ease-[var(--ease-out-expo)] md:col-span-4 md:group-hover:translate-x-3">
+                  <span translate="no" className="font-display text-[clamp(1.75rem,3.6vw,3.25rem)] leading-none tracking-[-0.035em] transition-transform duration-700 ease-[var(--ease-out-expo)] md:col-span-4 md:group-hover:translate-x-3">
                     {item.title}
                   </span>
                   <span className="font-mono text-xs text-mute md:order-last md:col-span-2 md:text-right">

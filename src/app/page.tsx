@@ -1,8 +1,11 @@
 import Image from "next/image";
 import Clock from "@/components/Clock";
-import CopyEmail from "@/components/CopyEmail";
+import Composer from "@/components/Composer";
 import Hero from "@/components/Hero";
 import Motion from "@/components/Motion";
+import MotionToggle from "@/components/MotionToggle";
+import Nav from "@/components/Nav";
+import Receipts from "@/components/Receipts";
 import Work, { Arrow } from "@/components/Work";
 import WorkIndex from "@/components/WorkIndex";
 import { contact, disciplines, experience, marquee } from "@/content";
@@ -10,12 +13,19 @@ import { contact, disciplines, experience, marquee } from "@/content";
 export default function Home() {
   return (
     <>
+      <a
+        href="#about"
+        className="fixed left-3 top-3 z-[80] -translate-y-16 rounded-full bg-ink px-4 py-2 text-sm text-paper focus-visible:translate-y-0"
+      >
+        Skip to content
+      </a>
       <Preloader />
       <Nav />
       <main>
         <Hero />
         <About />
         <Work />
+        <Receipts />
         <WorkIndex />
         <Marquee />
         <Capabilities />
@@ -45,38 +55,12 @@ function Preloader() {
   );
 }
 
-function Nav() {
-  const links = [
-    ["Work", "#work"],
-    ["About", "#about"],
-    ["Contact", "#contact"],
-  ];
-  return (
-    <header data-nav className="fixed inset-x-0 top-0 z-50 text-paper transition-colors duration-500">
-      <nav aria-label="Main" className="gutter flex items-center justify-between py-5 font-mono text-xs">
-        <a href="#top" className="roll">
-          <span>Joan Solé</span>
-        </a>
-        <span className="hidden gap-2 opacity-60 md:flex">
-          Barcelona <Clock />
-        </span>
-        <ul className="flex gap-5 sm:gap-7">
-          {links.map(([label, href]) => (
-            <li key={href}>
-              <a href={href} className="roll">
-                <span>{label}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </header>
-  );
-}
-
 function About() {
   return (
-    <section id="about" aria-label="About" className="gutter relative bg-paper pb-28 pt-32 md:pb-40 md:pt-48">
+    <section id="about" aria-labelledby="about-title" className="gutter relative bg-paper pb-28 pt-32 md:pb-40 md:pt-48">
+      <h2 id="about-title" className="sr-only">
+        About
+      </h2>
       <div className="grid gap-10 md:grid-cols-12">
         <figure data-fade className="md:col-span-3">
           <div className="group relative aspect-[4/5] w-28 overflow-hidden sm:w-36 md:w-44">
@@ -101,9 +85,10 @@ function About() {
           data-scrub-words
           className="font-display text-[clamp(1.75rem,3.7vw,3.75rem)] leading-[1.08] tracking-[-0.03em] md:col-span-9"
         >
-          I&rsquo;m Joan, a developer in Barcelona building generative AI products at TheEtailers. I like the parts
-          nobody screenshots: row-level security, request budgets, a page that comes back in 64 milliseconds. And the
-          parts everybody notices: type, motion, and how a button feels under your thumb.
+          I&rsquo;m Joan. I build generative AI products at <span translate="no">TheEtailers</span> and study
+          Computer Engineering at FIB. A lot of my favorite work never shows up in a screenshot, like a security policy
+          on every table or a polling loop that stopped flooding the database. The rest is type and motion, which I
+          fuss over more than I probably should.
         </p>
       </div>
 
@@ -113,7 +98,7 @@ function About() {
           ["Languages", "Catalan and Spanish, native. English, C1."],
           [
             "Workflow",
-            "Claude Code as my main tool, backed by a knowledge base of decisions, incidents and lessons that every project feeds.",
+            "I build with Claude Code and keep a knowledge base of decisions, incidents and lessons that every project adds to.",
           ],
         ].map(([k, v], i) => (
           <div key={k} data-fade className={`border-t border-line/70 pt-4 md:col-span-3 ${i === 0 ? "md:col-start-4" : ""}`}>
@@ -156,12 +141,12 @@ function Capabilities() {
     <section id="capabilities" aria-labelledby="cap-title" className="gutter bg-paper pb-24 pt-28 md:pb-36 md:pt-44">
       <div className="grid gap-10 md:grid-cols-12">
         <div className="self-start md:sticky md:top-28 md:col-span-4">
-          <h2 id="cap-title" data-reveal className="font-display text-[clamp(2.5rem,6vw,6rem)] leading-[0.9] tracking-[-0.04em]">
+          <h2 id="cap-title" data-reveal className="font-display text-balance text-[clamp(2.5rem,6vw,6rem)] leading-[0.9] tracking-[-0.04em]">
             What I do
           </h2>
           <p data-fade className="mt-6 max-w-[34ch] text-ink/70">
-            Product engineering across the whole stack. I&rsquo;m at my best where interface craft and solid systems
-            have to meet.
+            I work across the stack. The projects I enjoy most need a careful interface and a database that
+            won&rsquo;t fall over.
           </p>
         </div>
         <ol className="md:col-span-7 md:col-start-6">
@@ -170,7 +155,7 @@ function Capabilities() {
               <span className="font-mono text-xs leading-9 text-mute">0{i + 1}</span>
               <div>
                 <h3 className="font-display text-[clamp(1.75rem,3vw,2.75rem)] leading-tight tracking-[-0.03em]">{d.title}</h3>
-                <p className="mt-3 max-w-[52ch] text-ink/70">{d.body}</p>
+                <p className="mt-3 max-w-[52ch] text-pretty text-ink/70">{d.body}</p>
                 <p className="mt-5 font-mono text-xs text-mute">{d.tools.join(" · ")}</p>
               </div>
             </li>
@@ -200,7 +185,7 @@ function Experience() {
         {rows.map((r) => (
           <li key={r.org} data-fade className="grid gap-x-6 gap-y-1 border-t border-line/70 py-6 md:grid-cols-12 md:items-baseline md:py-8">
             <span className="font-mono text-xs text-mute md:col-span-2">{r.years}</span>
-            <span className="font-display text-[clamp(1.6rem,2.8vw,2.6rem)] leading-tight tracking-[-0.03em] md:col-span-4">
+            <span translate="no" className="font-display text-[clamp(1.6rem,2.8vw,2.6rem)] leading-tight tracking-[-0.03em] md:col-span-4">
               {r.org}
             </span>
             <span className="text-ink/90 md:col-span-3">{r.role}</span>
@@ -228,7 +213,7 @@ function Contact() {
           maskImage: "radial-gradient(circle at 38% 36%, black 0%, transparent 68%)",
         }}
       />
-      <div className="gutter relative flex min-h-[100dvh] flex-col pb-6 pt-28 md:pt-40">
+      <div className="gutter relative flex min-h-[100dvh] flex-col pb-6 pt-28 md:pt-36">
         <p className="font-mono text-xs">(Contact)</p>
         <h2
           id="contact-title"
@@ -238,38 +223,40 @@ function Contact() {
           Let&rsquo;s talk.
         </h2>
 
-        <div className="mt-16 grid items-end gap-10 md:mt-auto md:grid-cols-12 md:pt-20">
-          <div className="md:col-span-8">
-            <p className="max-w-[38ch] text-lg leading-snug md:text-xl">
-              Hiring, building something, or curious how the dithering on this page works? My inbox is open.
+        <div className="mt-12 grid items-start gap-12 md:grid-cols-12 md:gap-8">
+          <div className="md:col-span-5">
+            <p className="max-w-[34ch] text-pretty text-lg leading-snug md:text-xl">
+              Hiring, building something, or curious how the dots on this page work? Write to me. I answer every
+              email.
             </p>
             <a
               href={`mailto:${contact.email}`}
-              className="link-line font-display mt-6 inline-block break-all text-[clamp(1.5rem,4.4vw,4.25rem)] leading-tight tracking-[-0.035em]"
+              className="link-line font-display mt-6 inline-block break-all text-[clamp(1.5rem,2.6vw,2.5rem)] leading-tight tracking-[-0.03em]"
             >
               {contact.email}
             </a>
-            <div className="mt-6">
-              <CopyEmail email={contact.email} />
-            </div>
+            <ul className="mt-10 max-w-sm space-y-1 font-mono text-sm">
+              {links.map(([label, href]) => (
+                <li key={label}>
+                  <a href={href} target="_blank" rel="noreferrer" className="group flex items-center justify-between border-t border-paper/30 py-3">
+                    {label}
+                    <Arrow />
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="space-y-1 font-mono text-sm md:col-span-3 md:col-start-10">
-            {links.map(([label, href]) => (
-              <li key={label}>
-                <a href={href} target="_blank" rel="noreferrer" className="group flex items-center justify-between border-t border-paper/30 py-3">
-                  {label}
-                  <Arrow />
-                </a>
-              </li>
-            ))}
-          </ul>
+          <div data-fade className="md:col-span-6 md:col-start-7 md:-mt-[5vw]">
+            <Composer email={contact.email} />
+          </div>
         </div>
 
-        <footer className="mt-20 flex flex-wrap justify-between gap-3 border-t border-paper/30 pt-5 font-mono text-xs md:mt-24">
+        <footer className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-paper/30 pt-5 font-mono text-xs max-md:mt-20">
           <span>© 2026 Joan Solé</span>
           <span className="flex gap-2">
             Barcelona <Clock />
           </span>
+          <MotionToggle />
           <span>Next.js, GSAP and three.js. Set in Archivo and Geist.</span>
         </footer>
       </div>
