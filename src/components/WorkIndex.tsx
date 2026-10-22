@@ -30,7 +30,7 @@ export default function WorkIndex() {
   );
 
   return (
-    <section id="index" aria-labelledby="index-title" className="relative z-10 bg-paper" ref={root}>
+    <section id="index" aria-labelledby="index-title" className="relative z-10" ref={root}>
       <div className="gutter pb-24 pt-28 md:pb-40 md:pt-44">
         <header className="mb-10 flex items-end justify-between md:mb-16">
           <h2 id="index-title" data-reveal className="font-display text-[clamp(2.5rem,6vw,6rem)] leading-[0.9] tracking-[-0.04em]">

@@ -6,6 +6,7 @@ import Motion from "@/components/Motion";
 import MotionToggle from "@/components/MotionToggle";
 import Nav from "@/components/Nav";
 import Receipts from "@/components/Receipts";
+import Scene from "@/components/Scene";
 import Work, { Arrow } from "@/components/Work";
 import WorkIndex from "@/components/WorkIndex";
 import { contact, disciplines, experience, marquee } from "@/content";
@@ -20,6 +21,7 @@ export default function Home() {
         Skip to content
       </a>
       <Preloader />
+      <Scene />
       <Nav />
       <main>
         <Hero />
@@ -57,56 +59,44 @@ function Preloader() {
 
 function About() {
   return (
-    <section id="about" aria-labelledby="about-title" className="gutter relative bg-paper pb-28 pt-32 md:pb-40 md:pt-48">
+    <section id="about" aria-labelledby="about-title" className="gutter relative pb-28 pt-32 md:min-h-[115dvh] md:pb-40 md:pt-48">
       <h2 id="about-title" className="sr-only">
         About
       </h2>
       <div className="grid gap-10 md:grid-cols-12">
-        <figure data-fade className="md:col-span-3">
-          <div className="group relative aspect-[4/5] w-28 overflow-hidden sm:w-36 md:w-44">
-            <Image
-              src="/portrait.webp"
-              alt="Portrait of Joan Solé"
-              fill
-              sizes="176px"
-              className="object-cover opacity-0 grayscale transition-opacity duration-700 group-hover:opacity-100"
-            />
-            <Image
-              src="/portrait-dots.webp"
-              alt=""
-              fill
-              sizes="176px"
-              className="object-cover transition-opacity duration-700 group-hover:opacity-0"
-            />
+        <figure data-fade className="md:hidden">
+          <div className="relative aspect-[4/5] w-28 overflow-hidden sm:w-36">
+            <Image src="/portrait-dots.webp" alt="Portrait of Joan Solé" fill sizes="144px" className="object-cover" />
           </div>
-          <figcaption className="mt-3 font-mono text-xs text-mute">(About)</figcaption>
         </figure>
-        <p
-          data-scrub-words
-          className="font-display text-[clamp(1.75rem,3.7vw,3.75rem)] leading-[1.08] tracking-[-0.03em] md:col-span-9"
-        >
-          I&rsquo;m Joan. I build generative AI products at <span translate="no">TheEtailers</span> and study
-          Computer Engineering at FIB. A lot of my favorite work never shows up in a screenshot, like a security policy
-          on every table or a polling loop that stopped flooding the database. The rest is type and motion, which I
-          fuss over more than I probably should.
-        </p>
+        <div className="md:col-span-7">
+          <p className="font-mono text-xs text-mute">(About)</p>
+          <p
+            data-scrub-words
+            className="font-display mt-6 text-[clamp(1.75rem,3.3vw,3.4rem)] leading-[1.08] tracking-[-0.03em]"
+          >
+            I&rsquo;m Joan. I build generative AI products at <span translate="no">TheEtailers</span> and study
+            Computer Engineering at FIB. A lot of my favorite work never shows up in a screenshot, like a security
+            policy on every table or a polling loop that stopped flooding the database. The rest is type and motion,
+            which I fuss over more than I probably should.
+          </p>
+          <dl className="mt-16 grid gap-8 text-[0.95rem] leading-relaxed sm:grid-cols-3 md:mt-24">
+            {[
+              ["Education", "Computer Engineering at FIB, Universitat Politècnica de Catalunya."],
+              ["Languages", "Catalan and Spanish, native. English, C1."],
+              [
+                "Workflow",
+                "I build with Claude Code and keep a knowledge base of decisions, incidents and lessons that every project adds to.",
+              ],
+            ].map(([k, v]) => (
+              <div key={k} data-fade className="border-t border-line/70 pt-4">
+                <dt className="font-mono text-xs text-mute">{k}</dt>
+                <dd className="mt-2 text-pretty text-ink/80">{v}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </div>
-
-      <dl className="mt-20 grid gap-8 text-[0.95rem] leading-relaxed md:mt-28 md:grid-cols-12">
-        {[
-          ["Education", "Computer Engineering at FIB, Universitat Politècnica de Catalunya."],
-          ["Languages", "Catalan and Spanish, native. English, C1."],
-          [
-            "Workflow",
-            "I build with Claude Code and keep a knowledge base of decisions, incidents and lessons that every project adds to.",
-          ],
-        ].map(([k, v], i) => (
-          <div key={k} data-fade className={`border-t border-line/70 pt-4 md:col-span-3 ${i === 0 ? "md:col-start-4" : ""}`}>
-            <dt className="font-mono text-xs text-mute">{k}</dt>
-            <dd className="mt-2 text-ink/80">{v}</dd>
-          </div>
-        ))}
-      </dl>
     </section>
   );
 }
@@ -114,7 +104,7 @@ function About() {
 function Marquee() {
   const row = [...marquee, ...marquee];
   return (
-    <div aria-hidden className="overflow-hidden border-y border-line/70 bg-paper py-6 md:py-10">
+    <div aria-hidden className="overflow-hidden border-y border-line/70 py-6 md:py-10">
       {(["ltr", "rtl"] as const).map((dir) => (
         <div key={dir} data-marquee={dir} className="flex w-max items-center">
           {row.map((w, i) => (
@@ -138,7 +128,7 @@ function Marquee() {
 
 function Capabilities() {
   return (
-    <section id="capabilities" aria-labelledby="cap-title" className="gutter bg-paper pb-24 pt-28 md:pb-36 md:pt-44">
+    <section id="capabilities" aria-labelledby="cap-title" className="gutter pb-24 pt-28 md:pb-36 md:pt-44">
       <div className="grid gap-10 md:grid-cols-12">
         <div className="self-start md:sticky md:top-28 md:col-span-4">
           <h2 id="cap-title" data-reveal className="font-display text-balance text-[clamp(2.5rem,6vw,6rem)] leading-[0.9] tracking-[-0.04em]">
@@ -177,7 +167,7 @@ function Experience() {
     },
   ];
   return (
-    <section id="experience" aria-labelledby="exp-title" className="gutter bg-paper pb-32 md:pb-48">
+    <section id="experience" aria-labelledby="exp-title" className="gutter pb-32 md:pb-48">
       <h2 id="exp-title" data-reveal className="font-display mb-10 text-[clamp(2.5rem,6vw,6rem)] leading-[0.9] tracking-[-0.04em] md:mb-16">
         Experience
       </h2>

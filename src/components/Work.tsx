@@ -4,7 +4,7 @@ import { Ticket, Traingenio } from "./Previews";
 
 export default function Work() {
   return (
-    <section id="work" aria-labelledby="work-title" className="relative bg-paper">
+    <section id="work" aria-labelledby="work-title" className="relative">
       <header className="gutter flex items-end justify-between pb-10 pt-24 md:pb-16 md:pt-32">
         <h2 id="work-title" data-reveal className="font-display text-[clamp(3rem,9vw,9rem)] leading-[0.9] tracking-[-0.04em]">
           Selected work

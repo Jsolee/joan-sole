@@ -1,5 +1,3 @@
-import HeroCanvas from "./HeroCanvas";
-
 const proof = [
   ["Now", "TheEtailers"],
   ["Before", "Bjarke Ingels Group"],
@@ -9,8 +7,7 @@ const proof = [
 
 export default function Hero() {
   return (
-    <section id="top" className="relative flex min-h-[100dvh] flex-col overflow-hidden bg-paper">
-      <HeroCanvas />
+    <section id="top" className="relative flex min-h-[100dvh] flex-col overflow-hidden">
       <div data-hero-content className="gutter pointer-events-none relative z-10 mt-auto pb-5 pt-32 md:pb-7">
         <div className="mb-8 md:mb-12 md:max-w-[34rem]">
           <p data-intro className="text-pretty text-xl leading-snug text-ink md:text-2xl">

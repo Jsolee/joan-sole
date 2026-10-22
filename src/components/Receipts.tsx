@@ -37,7 +37,7 @@ const Label = ({ children }: { children: ReactNode }) => (
 
 export default function Receipts() {
   return (
-    <section id="receipts" aria-labelledby="receipts-title" className="gutter relative z-10 bg-paper pb-8 pt-28 md:pt-40">
+    <section id="receipts" aria-labelledby="receipts-title" className="gutter relative z-10 pb-8 pt-28 md:pt-40">
       <header className="mb-10 grid gap-6 md:mb-14 md:grid-cols-12 md:items-end">
         <h2 id="receipts-title" data-reveal className="font-display text-[clamp(3rem,9vw,9rem)] leading-[0.9] tracking-[-0.04em] md:col-span-7">
           Receipts
