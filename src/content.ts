@@ -2,6 +2,7 @@ export const contact = {
   email: "joansolejimenez@gmail.com",
   github: "https://github.com/Jsolee",
   linkedin: "https://www.linkedin.com/in/joansolejimenez",
+  cv: "/joan-sole-cv.pdf",
 };
 
 export type Project = {

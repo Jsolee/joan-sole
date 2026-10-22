@@ -175,9 +175,26 @@ function Experience() {
   ];
   return (
     <section id="experience" aria-labelledby="exp-title" className="gutter pb-32 md:pb-48">
-      <h2 id="exp-title" data-reveal className="font-display mb-10 text-[clamp(2.5rem,6vw,6rem)] leading-[0.9] tracking-[-0.04em] md:mb-16">
-        Experience
-      </h2>
+      <div className="mb-10 flex flex-wrap items-end justify-between gap-6 md:mb-16">
+        <h2 id="exp-title" data-reveal className="font-display text-[clamp(2.5rem,6vw,6rem)] leading-[0.9] tracking-[-0.04em]">
+          Experience
+        </h2>
+        <a
+          data-fade
+          href={contact.cv}
+          target="_blank"
+          rel="noopener"
+          className="press group inline-flex items-center gap-3 rounded-full bg-ink py-2 pl-5 pr-2 text-sm font-medium text-paper"
+        >
+          Full CV
+          <span className="font-mono text-xs text-paper/60">PDF · 76&nbsp;KB</span>
+          <span className="grid size-8 place-items-center rounded-full bg-paper/10 transition-transform duration-300 ease-[var(--ease-out-expo)] group-hover:translate-y-0.5">
+            <svg aria-hidden viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.6">
+              <path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10" />
+            </svg>
+          </span>
+        </a>
+      </div>
       <ul className="border-b border-line/70">
         {rows.map((r) => (
           <li key={r.org} data-fade className="grid gap-x-6 gap-y-1 border-t border-line/70 py-6 md:grid-cols-12 md:items-baseline md:py-8">
@@ -198,6 +215,7 @@ function Contact() {
   const links = [
     ["LinkedIn", contact.linkedin],
     ["GitHub", contact.github],
+    ["CV (PDF)", contact.cv],
   ];
   return (
     <section id="contact" aria-labelledby="contact-title" className="relative overflow-hidden bg-signal text-paper">

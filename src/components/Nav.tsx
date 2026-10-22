@@ -104,6 +104,13 @@ export default function Nav() {
                 </a>
               </li>
             ))}
+            <li>
+              <a href={contact.cv} target="_blank" rel="noopener" className="group block py-1.5">
+                <span className="roll">
+                  <span>CV ↗</span>
+                </span>
+              </a>
+            </li>
           </ul>
         </div>
       </div>
@@ -152,6 +159,15 @@ export default function Nav() {
             </ul>
           </div>
 
+          <a
+            href={contact.cv}
+            target="_blank"
+            rel="noopener"
+            className="press hidden items-center gap-1.5 rounded-full border border-ink/15 px-4 py-2 text-sm transition-colors duration-200 hover:border-ink/40 sm:inline-flex"
+          >
+            CV
+            <DownloadIcon />
+          </a>
           <a
             href="#contact"
             className="press hidden rounded-full bg-signal px-4 py-2 text-sm text-paper transition-colors duration-200 hover:bg-[#a8321a] sm:inline-flex"
@@ -203,10 +219,22 @@ export default function Nav() {
             </li>
           ))}
         </ul>
-        <a href={`mailto:${contact.email}`} className="mt-10 font-mono text-sm text-paper/70">
-          {contact.email}
-        </a>
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 font-mono text-sm text-paper/70">
+          <a href={`mailto:${contact.email}`}>{contact.email}</a>
+          <a href={contact.cv} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 rounded-full border border-paper/25 px-4 py-2 text-paper">
+            CV (PDF)
+            <DownloadIcon />
+          </a>
+        </div>
       </div>
     </>
+  );
+}
+
+function DownloadIcon() {
+  return (
+    <svg aria-hidden viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10" />
+    </svg>
   );
 }
