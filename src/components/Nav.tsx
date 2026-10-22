@@ -121,7 +121,7 @@ export default function Nav() {
         >
           <a href="#top" className="flex items-center gap-2.5 rounded-full py-0.5 pl-0.5 pr-3">
             <span className="relative size-8 overflow-hidden rounded-full bg-paper-2 ring-1 ring-ink/10">
-              <Image src="/portrait-dots.webp" alt="" fill sizes="32px" className="origin-top scale-[1.6] object-cover object-top" />
+              <Image src="/avatar.webp" alt="" fill sizes="32px" className="object-cover" />
             </span>
             <span className="text-sm font-medium" translate="no">
               Joan Solé

@@ -61,11 +61,13 @@ function seenIntro() {
   return seenCache;
 }
 
-// The ink sheet waits for the WebGL hero, then hands over to it: the hero starts as the same
-// solid ink, opens into a halftone from the centre, and the dotted name settles into real type.
+// The ink sheet waits for WebGL, then hands over to it. The scene starts as the same black,
+// with the particles scattered like stars; they gather into the knot while the counter climbs,
+// the name prints itself in dots, and the sheet clears from the centre with a vermilion edge.
 function intro(lenis: Lenis) {
   const pre = document.querySelector<HTMLElement>(".preloader");
   const count = pre?.querySelector("[data-count]");
+  const dots = pre ? gsap.utils.toArray<HTMLElement>("[data-dot]", pre) : [];
   const chars = SplitText.create("[data-kinetic]", {
     type: "lines,words,chars",
     mask: "lines",
@@ -82,29 +84,44 @@ function intro(lenis: Lenis) {
   gsap.set("[data-nav]", { opacity: 0 });
 
   const n = { v: 0 };
+  let lit = -1;
   const showCount = () => {
     if (count) count.textContent = String(Math.round(n.v)).padStart(3, "0");
+    const next = Math.round((n.v / 100) * dots.length);
+    if (next !== lit) {
+      lit = next;
+      dots.forEach((d, i) => d.classList.toggle("on", i < lit));
+    }
   };
-  const loading = gsap.to(n, { v: 86, duration: 1.4, ease: "power2.out", onUpdate: showCount });
+  const loading = gsap.to(n, { v: 36, duration: 1.2, ease: "power2.out", onUpdate: showCount });
 
   let started = false;
+  let usedHero = false;
   const go = () => {
     if (started) return;
     started = true;
     loading.kill();
     const hero = window.__hero;
-    const len = seen ? 1.3 : 1.9;
+    usedHero = !!hero;
     const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
 
-    tl.to(n, { v: 100, duration: seen ? 0.01 : 0.3, ease: "power1.out", onUpdate: showCount });
-    if (hero) {
-      tl.set(pre, { display: "none" })
-        .to(hero, { curtain: 1, duration: len, ease: "power2.inOut" })
-        .to(hero, { scale: 1, duration: len + 0.2, ease: "expo.inOut" }, "<")
-        .to(chars, { yPercent: 0, duration: 1.3, stagger: 0.04 }, `<${len * 0.7}`)
-        .to(hero, { name: 0, duration: 0.8, ease: "power1.inOut" }, "<0.3");
+    if (hero && pre) {
+      const gather = seen ? 1.1 : 1.9;
+      const wipe = seen ? 1.0 : 1.3;
+      tl.to(pre, { backgroundColor: "rgba(23, 21, 15, 0)", duration: 0.6, ease: "power1.out" })
+        .to(pre.querySelector(".seed"), { opacity: 0, duration: 0.4 }, "<")
+        .to(hero, { assemble: 1, duration: gather, ease: "power3.inOut" }, "<")
+        .to(n, { v: 100, duration: gather, ease: "power3.inOut", onUpdate: showCount }, "<")
+        .to(hero, { name: 1, duration: gather * 0.45, ease: "power1.in" }, `<${gather * 0.55}`)
+        .to(pre, { opacity: 0, duration: 0.35, ease: "power1.out" })
+        .set(pre, { display: "none" })
+        .to(hero, { curtain: 1, duration: wipe, ease: "power2.inOut" }, "<")
+        .to(hero, { scale: 1, duration: wipe, ease: "power2.inOut" }, "<")
+        .to(chars, { yPercent: 0, duration: 1.3, stagger: 0.04 }, `<${wipe * 0.6}`)
+        .to(hero, { name: 0, duration: 0.8, ease: "power1.inOut" }, "<0.4");
     } else {
-      tl.to(pre, { clipPath: "inset(0 0 100% 0)", duration: 0.9, ease: "expo.inOut" })
+      tl.to(n, { v: 100, duration: 0.3, ease: "power1.out", onUpdate: showCount })
+        .to(pre, { clipPath: "inset(0 0 100% 0)", duration: 0.9, ease: "expo.inOut" })
         .to(chars, { yPercent: 0, duration: 1.3, stagger: 0.04 }, "<0.4")
         .set(pre, { display: "none" });
     }
@@ -115,11 +132,14 @@ function intro(lenis: Lenis) {
     if (skip) tl.progress(1, false);
   };
 
-  // Let the counter breathe on a first visit, never wait more than three seconds for WebGL.
-  const ready = () => gsap.delayedCall(seen || skip ? 0.05 : 0.7, go);
+  // WebGL arrived after the fallback already played: show the finished scene, not the ink sheet.
+  const ready = () => {
+    if (!started) gsap.delayedCall(seen || skip ? 0.05 : 0.25, go);
+    else if (!usedHero && window.__hero) Object.assign(window.__hero, { curtain: 1, scale: 1, name: 0, assemble: 1 });
+  };
   if (window.__hero) ready();
-  else addEventListener("hero:ready", ready, { once: true });
-  gsap.delayedCall(3, go);
+  else addEventListener("hero:ready", ready);
+  gsap.delayedCall(3.5, go);
 
   return () => removeEventListener("hero:ready", ready);
 }

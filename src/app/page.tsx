@@ -47,10 +47,17 @@ function Preloader() {
         <span>Portfolio 2026</span>
       </div>
       <span className="seed absolute left-1/2 top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-signal" />
-      <div className="flex items-end justify-between">
+      <div className="flex items-end justify-between gap-6">
         <span>Fullstack developer, Barcelona</span>
-        <span data-count className="tabular-nums text-paper">
-          000
+        <span className="flex items-center gap-4">
+          <span className="hidden gap-[5px] sm:flex">
+            {Array.from({ length: 24 }, (_, i) => (
+              <span key={i} data-dot className="size-1 rounded-full bg-paper/15 transition-colors duration-150 [&.on]:bg-paper" />
+            ))}
+          </span>
+          <span data-count className="tabular-nums text-paper">
+            000
+          </span>
         </span>
       </div>
     </div>

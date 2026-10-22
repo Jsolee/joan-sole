@@ -101,7 +101,7 @@ h3 {
 
 /* Preloader falls away on its own if JS never arrives */
 .preloader {
-  animation: preloader-fallback 0.4s 6s var(--ease-out-quart) forwards;
+  animation: preloader-fallback 0.4s 8s var(--ease-out-quart) forwards;
 }
 @keyframes preloader-fallback {
   to {

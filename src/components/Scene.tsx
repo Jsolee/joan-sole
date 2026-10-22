@@ -101,6 +101,7 @@ const ditherFrag = /* glsl */ `
 
   float disc(float r, float len, float aa) { return 1.0 - smoothstep(r - aa, r + aa, len); }
   float inkAt(vec4 s) { return clamp(s.b * (0.86 - s.r * 0.9), 0.0, 1.0); }
+  float lightAt(vec4 s) { return clamp(s.b * (0.08 + s.r * 0.85), 0.0, 1.0); }
 
   void main() {
     vec2 cell = floor(gl_FragCoord.xy / uCell);
@@ -113,6 +114,7 @@ const ditherFrag = /* glsl */ `
     float bgInk = (0.022 + halo * 0.13) * (1.0 - s.b);
     float nameInk = texture2D(tName, uv).a * uName;
     float ink = max(max(inkAt(s), bgInk), nameInk);
+    float glow = max(max(lightAt(s), bgInk * 0.5), nameInk);
     float rim = s.g * s.b;
     float ghost = inkAt(texture2D(tScene, (cell + vec2(0.0, uShift) + 0.5) / uGrid));
 
@@ -120,14 +122,22 @@ const ditherFrag = /* glsl */ `
     float len = length(local);
     float aa = 1.2 / uCell;
 
-    vec3 col = uPaper;
+    // The ink sheet: 1 = still black (the print is inverted, light glows as paper dots),
+    // 0 = paper. It clears from the centre outwards as uCurtain goes 0 -> 1.
+    float d = distance(c, uRes * 0.5) / length(uRes * 0.5);
+    float w = clamp((1.0 - uCurtain) * 1.8 - (1.0 - d) * 0.8, 0.0, 1.0);
+    float sheet = 0.72 * sqrt(w);
+    bool onSheet = sheet > 0.36;
+    float v = onSheet ? glow : ink;
+
+    vec3 col = mix(uPaper, uInk, disc(sheet, len, aa));
     if (abs(uShift) > 0.4 && ghost > th + 0.002) col = mix(col, uSignal, disc(0.16 + 0.2 * ghost, len, aa));
-    if (ink > th + 0.002) col = mix(col, uInk, disc(0.2 + 0.22 * ink, len, aa));
+    if (v > th + 0.002) col = mix(col, onSheet ? uPaper : uInk, disc(0.2 + 0.22 * v, len, aa));
     if (rim * 0.9 > th + 0.002) col = mix(col, uSignal, disc(0.2 + 0.22 * rim, len, aa));
 
-    float d = distance(c, uRes * 0.5) / length(uRes * 0.5);
-    float cur = clamp((1.0 - uCurtain) * 1.8 - (1.0 - d) * 0.8, 0.0, 1.0);
-    col = mix(col, uInk, disc(0.72 * sqrt(cur), len, aa));
+    // A vermilion fringe rides the edge of the sheet while it clears.
+    float front = smoothstep(0.0, 0.1, w) * (1.0 - smoothstep(0.1, 0.42, w));
+    if (front * 0.9 > th) col = mix(col, uSignal, disc(0.32, len, aa));
 
     gl_FragColor = vec4(col, 1.0);
   }
@@ -141,7 +151,7 @@ const fullVert = /* glsl */ `
 
 type Shape = { pos: Float32Array; nrm: Float32Array; tone: Float32Array };
 type Vec = [number, number, number];
-type StateName = "knot" | "dust" | "portrait" | "layers" | "database" | "phone" | "mind";
+type StateName = "seed" | "knot" | "dust" | "portrait" | "layers" | "database" | "phone" | "mind";
 
 const rng = (seed: number) => () => {
   seed = (seed + 0x6d2b79f5) | 0;
@@ -173,6 +183,13 @@ function make(n: number, seed: number, fn: (i: number, r: () => number) => { p: 
 }
 
 const shapes = {
+  // Every particle packed into the loader's red dot; the intro bursts them out into the knot.
+  seed: (n: number) =>
+    make(n, 8, (_, r) => {
+      const d = unit(r);
+      const k = 0.07 * Math.cbrt(r());
+      return { p: [d[0] * k, d[1] * k, d[2] * k], n: d, t: 0 };
+    }),
   dust: (n: number) => make(n, 1, (_, r) => ({ p: [(r() * 2 - 1) * 7, (r() * 2 - 1) * 3.4, 0.8 - r() * 3], n: unit(r), t: 0.18 + r() * 0.25 })),
 
   // Three stacked windows: interfaces.
@@ -271,6 +288,7 @@ async function portraitShape(n: number): Promise<Shape> {
 
 type Layout = { fx: number; fy: number; scale: number; toneMix: number; size: number };
 const desktop: Record<StateName, Layout> = {
+  seed: { fx: 0.5, fy: 0.5, scale: 1, toneMix: 0, size: 1.9 },
   knot: { fx: 0.73, fy: 0.47, scale: 1, toneMix: 0, size: 1.9 },
   dust: { fx: 0.5, fy: 0.5, scale: 1, toneMix: 1, size: 1 },
   portrait: { fx: 0.74, fy: 0.47, scale: 3.1, toneMix: 1, size: 1.5 },
@@ -284,6 +302,8 @@ const spin = (s: StateName, t: number, mx: number, my: number, hero: number): Ve
   switch (s) {
     case "knot":
       return [t * 0.12 + my * 0.35 + hero * 1.2, t * 0.2 + mx * 0.5, 0];
+    case "seed":
+      return [t * 0.6, t * 0.9, 0];
     case "dust":
       return [0, Math.sin(t * 0.05) * 0.05, 0];
     case "portrait":
@@ -331,7 +351,7 @@ function scramble(el: HTMLElement, text: string) {
   requestAnimationFrame(step);
 }
 
-export type HeroControl = { curtain: number; scale: number; name: number };
+export type HeroControl = { curtain: number; scale: number; name: number; assemble: number };
 declare global {
   interface Window {
     __hero?: HeroControl;
@@ -374,7 +394,9 @@ export default function Scene() {
       const dpr = Math.min(devicePixelRatio, 2);
       renderer.setPixelRatio(dpr);
 
-      const ctl: HeroControl = reduced ? { curtain: 1, scale: 1, name: 0 } : { curtain: 0, scale: 7, name: 1 };
+      const ctl: HeroControl = reduced
+        ? { curtain: 1, scale: 1, name: 0, assemble: 1 }
+        : { curtain: 0, scale: 2, name: 0, assemble: 0 };
 
       // Particles: the torus knot's own vertices are the starting shape.
       const knotGeo = new THREE.TorusKnotGeometry(1, 0.34, 300, 64, 2, 3);
@@ -388,6 +410,7 @@ export default function Scene() {
       };
       const library: Partial<Record<StateName, Shape>> = {
         knot,
+        seed: shapes.seed(N),
         dust: shapes.dust(N),
         layers: shapes.layers(N),
         database: shapes.database(N),
@@ -533,6 +556,7 @@ export default function Scene() {
       let nameOn = ctl.name > 0;
       let portraitPending = true;
       let currentRequest: StateName = "knot";
+      let hudPending = true;
 
       // ---- state machine: one transition at a time, always heading for the latest request ----
       const sm = { cur: "knot" as StateName, next: "knot" as StateName, want: "knot" as StateName, busy: false };
@@ -569,6 +593,15 @@ export default function Scene() {
         });
       };
 
+      // Intro: every particle starts packed into the loader's red dot and bursts out into the knot.
+      // Motion drives ctl.assemble; nothing else may move the state machine until it lands.
+      let assembling = ctl.assemble < 1;
+      if (assembling) {
+        load("from", library.seed!);
+        load("to", knot);
+        Object.assign(sm, { cur: "seed", next: "knot", busy: true });
+      }
+
       // ---- HUD ----
       const anchors: Partial<Record<StateName, number[]>> = {
         knot: [0, 75, 150, 225].map((j) => j * 65 + 16),
@@ -591,7 +624,7 @@ export default function Scene() {
       const hud = (on: boolean) => {
         const el = hudRef.current;
         if (!el) return;
-        hudOn = on && view.wide && !reduced && !!hudText[sm.cur];
+        hudOn = on && view.wide && !reduced && ctl.curtain >= 1 && !!hudText[sm.cur];
         el.style.opacity = hudOn ? "1" : "0";
         if (!hudOn) return;
         hudText[sm.cur]!.forEach((t, i) => {
@@ -638,6 +671,22 @@ export default function Scene() {
       const render = (now: number) => {
         const t = now * 0.001;
         u.uTime.value = t;
+        if (assembling) {
+          u.uMix.value = ctl.assemble;
+          if (ctl.assemble >= 1) {
+            assembling = false;
+            sm.cur = "knot";
+            load("from", knot);
+            u.uMix.value = 0;
+            sm.busy = false;
+            if (sm.want !== "knot") go(sm.want);
+          }
+        }
+        // Labels wait for the paper: they appear once the ink sheet has fully cleared.
+        if (hudPending && ctl.curtain >= 1 && !sm.busy) {
+          hudPending = false;
+          hud(true);
+        }
         for (const k of ["x", "y", "px", "py"] as const) eased[k] += (pointer[k] - eased[k]) * (k.startsWith("p") ? 0.12 : 0.05);
         // The portrait loads after the first frame; if someone already scrolled to About, catch up.
         if (portraitPending && library.portrait) {
