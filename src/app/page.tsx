@@ -2,10 +2,10 @@ import Image from "next/image";
 import Clock from "@/components/Clock";
 import Composer from "@/components/Composer";
 import Hero from "@/components/Hero";
+import HowIWork from "@/components/HowIWork";
 import Motion from "@/components/Motion";
 import MotionToggle from "@/components/MotionToggle";
 import Nav from "@/components/Nav";
-import Receipts from "@/components/Receipts";
 import Scene from "@/components/Scene";
 import Work, { Arrow } from "@/components/Work";
 import WorkIndex from "@/components/WorkIndex";
@@ -27,10 +27,10 @@ export default function Home() {
         <Hero />
         <About />
         <Work />
-        <Receipts />
         <WorkIndex />
         <Marquee />
         <Capabilities />
+        <HowIWork />
         <Experience />
         <Contact />
       </main>

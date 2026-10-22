@@ -33,7 +33,7 @@ export default function Motion() {
       scrubWords();
       stackCards();
       parallax();
-      receipts();
+      proofs();
 
       return () => {
         offs.forEach((off) => off?.());
@@ -307,8 +307,8 @@ function marquee() {
   return () => removeEventListener("motion:change", sync);
 }
 
-// Receipts: counters run from a starting value, cell grids fill in, bars and lines draw.
-function receipts() {
+// How I work: counters run from a starting value, cell grids fill in, bars and lines draw.
+function proofs() {
   const once = (trigger: Element) => ({ trigger, start: "top 85%", once: true });
 
   q("[data-count-to]").forEach((el) => {

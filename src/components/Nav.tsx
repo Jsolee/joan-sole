@@ -6,8 +6,8 @@ import { contact } from "@/content";
 import Clock from "./Clock";
 
 const links = [
-  { label: "Work", href: "#work", sections: ["work", "receipts", "index"] },
-  { label: "About", href: "#about", sections: ["about", "capabilities"] },
+  { label: "Work", href: "#work", sections: ["work", "index"] },
+  { label: "About", href: "#about", sections: ["about", "capabilities", "how"] },
   { label: "Experience", href: "#experience", sections: ["experience"] },
 ];
 

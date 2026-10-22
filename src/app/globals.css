@@ -189,6 +189,14 @@ h3 {
     transform: rotate(4deg) scale(1.08);
   }
 }
+@keyframes ticker {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
 @keyframes twinkle {
   0%,
   100% {

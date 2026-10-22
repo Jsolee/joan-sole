@@ -335,9 +335,9 @@ const sections: [id: string, label: string, state: StateName | null][] = [
   ["top", "01 Joan Solé", "knot"],
   ["about", "02 About", "portrait"],
   ["work", "03 Selected work", "dust"],
-  ["receipts", "04 Receipts", "dust"],
-  ["index", "05 Also built", "dust"],
-  ["capabilities", "06 What I do", null],
+  ["index", "04 Also built", "dust"],
+  ["capabilities", "05 What I do", null],
+  ["how", "06 How I work", "dust"],
   ["experience", "07 Experience", "dust"],
   ["contact", "08 Contact", "dust"],
 ];
