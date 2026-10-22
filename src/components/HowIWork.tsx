@@ -20,7 +20,21 @@ const Body = ({ children }: { children: ReactNode }) => (
   <p className="mt-4 max-w-[52ch] text-pretty text-[0.95rem] leading-relaxed text-ink/75">{children}</p>
 );
 
-function Stat({ value, label, from, decimals, tag }: { value: string; label: ReactNode; from?: number; decimals?: number; tag?: string }) {
+function Stat({
+  value,
+  label,
+  from,
+  decimals,
+  tag,
+  suffix,
+}: {
+  value: string;
+  label: ReactNode;
+  from?: number;
+  decimals?: number;
+  tag?: string;
+  suffix?: string;
+}) {
   const num = Number(value);
   return (
     <div className="border-t border-ink/10 pt-3">
@@ -32,6 +46,7 @@ function Stat({ value, label, from, decimals, tag }: { value: string; label: Rea
             {value}
           </span>
         )}
+        {suffix}
       </p>
       <p className="mt-2 text-[0.85rem] leading-snug text-ink/65">{label}</p>
       {tag && (
@@ -67,6 +82,65 @@ const reviews = [
   ["#69", "Integrate snapshot, drop the auth lock from tests", "Approved"],
 ];
 
+const prs = [
+  ["#113", "feat/promoter-one-night", "feat", "a promoter can be brought in for one night only"],
+  ["#109", "fix/customer-stats-invoker", "fix", "v_customer_stats runs as whoever asks"],
+  ["#108", "revert/bank-page-methods", "revert", "the bank’s page needs every method"],
+];
+
+function GitGraph() {
+  const row = 34;
+  const rows = prs.length * 2;
+  const y = (i: number) => i * row + row / 2;
+  return (
+    <div aria-label="Recent pull requests on the club ticketing repo" className="mt-7 overflow-hidden rounded-xl border border-ink/10 bg-paper">
+      <div className="flex items-center justify-between border-b border-ink/8 px-4 py-2 font-mono text-[0.7rem] text-mute">
+        <span>git log --graph main</span>
+        <span>CI · GitHub Actions</span>
+      </div>
+      <div className="relative" style={{ height: rows * row }}>
+        <svg aria-hidden viewBox={`0 0 44 ${rows * row}`} className="absolute inset-y-0 left-2 h-full w-11">
+          <line x1="12" y1="0" x2="12" y2={rows * row} stroke="currentColor" strokeOpacity="0.35" strokeWidth="1.5" />
+          {prs.map((_, i) => {
+            const merge = y(i * 2);
+            const commit = y(i * 2 + 1);
+            return (
+              <path
+                key={i}
+                data-draw
+                pathLength={1}
+                d={`M12 ${commit + row * 0.85} C30 ${commit + row * 0.6} 30 ${commit + 8} 30 ${commit} C30 ${merge + 14} 30 ${merge + 6} 12 ${merge}`}
+                fill="none"
+                stroke="#c23b1c"
+                strokeWidth="1.5"
+              />
+            );
+          })}
+          {prs.map((_, i) => (
+            <g key={i}>
+              <circle cx="12" cy={y(i * 2)} r="4" className="fill-ink" />
+              <circle cx="30" cy={y(i * 2 + 1)} r="3.5" fill="#f3f0e8" stroke="#c23b1c" strokeWidth="1.5" />
+            </g>
+          ))}
+        </svg>
+        <ol className="absolute inset-y-0 left-14 right-3 font-mono text-[0.72rem]">
+          {prs.flatMap(([n, branch, type, msg]) => [
+            <li key={`${n}m`} className="flex items-center gap-2" style={{ height: row }}>
+              <span className="text-ink">Merge {n}</span>
+              <span className="truncate rounded-full border border-ink/12 px-2 py-px text-mute">{branch}</span>
+              <span className="ml-auto shrink-0 rounded-full bg-[#2f9e62]/12 px-2 py-px text-[#1f7a48]">✓ CI</span>
+            </li>,
+            <li key={`${n}c`} className="flex items-center gap-1.5 pl-4" style={{ height: row }}>
+              <span className="font-semibold text-signal">{type}:</span>
+              <span className="truncate text-ink/75">{msg}</span>
+            </li>,
+          ])}
+        </ol>
+      </div>
+    </div>
+  );
+}
+
 export default function HowIWork() {
   return (
     <section id="how" aria-labelledby="how-title" className="gutter relative z-10 pb-28 pt-28 md:pb-40 md:pt-40">
@@ -80,38 +154,19 @@ export default function HowIWork() {
       </header>
 
       <div className="grid gap-3 md:grid-cols-12 md:gap-4">
-        {/* 01 · ship */}
-        <Habit n="01" title="Put it in front of real people, early" className="md:col-span-7">
+        {/* 01 · git workflow */}
+        <Habit n="01" title="One branch per change, a history you can read" className="md:col-span-7">
           <Body>
-            I&rsquo;d rather ship something small that people use this week than something big that sits on my laptop.
-            Real use finds the problems that matter.
+            Every change gets its own branch, lands through a pull request once CI is green, and is written as a
+            Conventional Commit that explains why, not just what. On team projects a hook enforces it and every commit
+            links its ticket.
           </Body>
-          <div className="mt-8 flex flex-wrap items-end gap-x-6 gap-y-2">
-            <p className="font-display text-[clamp(4rem,8vw,7.5rem)] leading-[0.82] tracking-[-0.05em]">
-              <span data-count-to="1">1</span>&nbsp;day
-            </p>
-            <p className="max-w-[24ch] pb-2 text-[0.95rem] leading-snug text-ink/70">
-              from the first commit to a TestFlight build <Tag>FROST</Tag>
-            </p>
+          <GitGraph />
+          <div className="mt-auto grid grid-cols-3 gap-4 pt-7">
+            <Stat value="150" label="of my pull requests merged" tag="Club ticketing · Talaia" />
+            <Stat value="98" suffix="%" label="Conventional Commits, 396 of 403" />
+            <Stat value="3" label="environments: snapshot, stable, prod" tag="Talaia" />
           </div>
-          <ol className="mt-auto space-y-4 pt-8">
-            {[
-              ["Club ticketing", "66 commits and 19 migrations, from zero", "Day one"],
-              ["QusAP", "In weekly classroom use, 132 students", "Since Sep 2026"],
-              ["Picgenio", "Video generator, used by paying customers", "In production"],
-            ].map(([p, what, when]) => (
-              <li key={p} className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-2">
-                <span className="flex items-center gap-3 text-[0.95rem]">
-                  <Tag>{p}</Tag>
-                  <span className="text-ink/80">{what}</span>
-                </span>
-                <span className="font-mono text-xs text-ink">{when}</span>
-                <span className="col-span-2 h-0.5 overflow-hidden rounded-full bg-ink/10">
-                  <span data-bar data-bar-from="0" data-bar-to="1" className="block h-full origin-left rounded-full bg-ink" />
-                </span>
-              </li>
-            ))}
-          </ol>
         </Habit>
 
         {/* 02 · measure */}
@@ -120,16 +175,19 @@ export default function HowIWork() {
             When a live class froze, everyone blamed the database. It was answering in under a millisecond. Counting
             requests found the real cause: a polling loop.
           </Body>
-          <svg viewBox="0 0 300 110" className="mt-6 w-full overflow-visible" aria-hidden>
+          <div className="flex flex-1 items-center py-6">
+            <svg viewBox="0 0 300 110" className="w-full overflow-visible" aria-hidden>
             <line x1="0" y1="100" x2="300" y2="100" stroke="currentColor" strokeOpacity="0.15" />
             <path data-draw pathLength={1} d="M0 96 L30 92 L52 62 L64 80 L80 24 L92 54 L104 8 L118 44 L130 6 L150 36" fill="none" stroke="#c23b1c" strokeWidth="2" strokeLinejoin="round" />
             <path data-draw pathLength={1} d="M150 36 L162 96 L300 98" fill="none" stroke="currentColor" strokeWidth="2" />
             <text x="104" y="-2" className="fill-current font-mono text-[9px]" opacity="0.55">282 req/s</text>
             <text x="214" y="90" className="fill-current font-mono text-[9px]" opacity="0.55">after</text>
           </svg>
-          <div className="mt-auto grid grid-cols-2 gap-4 pt-6">
+          </div>
+          <div className="grid grid-cols-3 gap-4">
             <Stat value="282" label="requests a second, from a polling loop" />
-            <Stat value="0" from={282} label="errors after, with 80 students on 4% of a core" />
+            <Stat value="0.7" decimals={1} suffix=" ms" label="per query in the database, at most" />
+            <Stat value="0" from={282} label="errors after the fix, 80 students, 4% of a core" />
           </div>
         </Habit>
 

@@ -141,7 +141,7 @@ export const disciplines = [
   },
   {
     title: "Mobile",
-    body: "Expo and Swift. HealthKit, GPS tracking, a door scanner that works offline and home-screen widgets.",
+    body: "Expo and React Native: a door-scanning app that keeps working offline, and a night-sky map built with a team of six.",
     tools: ["Expo", "React Native", "Reanimated", "SwiftUI"],
   },
   {
