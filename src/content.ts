@@ -14,8 +14,7 @@ export type Project = {
   stack: string[];
   notes: string[];
   url?: string;
-  image?: string;
-  visual?: "ticket" | "traingenio";
+  visual: "picgenio" | "qusap" | "traingenio" | "ticket";
   tint: string;
 };
 
@@ -35,7 +34,7 @@ export const featured: Project[] = [
       "Guided onboarding and the partner landing pages.",
     ],
     url: "https://picgenio.ai",
-    image: "/work/picgenio.webp",
+    visual: "picgenio",
     tint: "#e5683c",
   },
   {
@@ -53,7 +52,7 @@ export const featured: Project[] = [
       "Row-level security on all 35 tables, and the grading engine runs inside Postgres.",
     ],
     url: "https://qusap.com",
-    image: "/work/qusap.webp",
+    visual: "qusap",
     tint: "#2f9e62",
   },
   {

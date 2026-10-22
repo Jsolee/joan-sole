@@ -1,6 +1,8 @@
-import Image from "next/image";
 import { featured, type Project } from "@/content";
-import { Ticket, Traingenio } from "./Previews";
+import { PicgenioDemo, QusapDemo, TraingenioDemo } from "./Demos";
+import { Ticket } from "./Previews";
+
+const demos = { picgenio: PicgenioDemo, qusap: QusapDemo, traingenio: TraingenioDemo, ticket: Ticket };
 
 export default function Work() {
   return (
@@ -95,36 +97,13 @@ function Card({ p, i }: { p: Project; i: number }) {
 }
 
 function Media({ p }: { p: Project }) {
-  if (p.visual)
-    return (
-      <div data-clip className="absolute inset-0 overflow-hidden rounded-xl border border-ink/10 shadow-[0_1px_2px_0_rgb(23_21_15/0.06),0_24px_48px_-24px_rgb(23_21_15/0.25)] max-md:relative max-md:aspect-[4/3]">
-        {p.visual === "ticket" ? <Ticket /> : <Traingenio />}
-      </div>
-    );
+  const Demo = demos[p.visual];
   return (
     <div
       data-clip
-      className="absolute inset-0 flex flex-col overflow-hidden rounded-xl border border-ink/10 bg-paper shadow-[0_1px_2px_0_rgb(23_21_15/0.06),0_24px_48px_-24px_rgb(23_21_15/0.25)] max-md:relative max-md:aspect-[16/11]"
+      className="absolute inset-0 overflow-hidden rounded-xl border border-ink/10 shadow-[0_1px_2px_0_rgb(23_21_15/0.06),0_24px_48px_-24px_rgb(23_21_15/0.25)] max-md:relative max-md:aspect-[16/11]"
     >
-      <div className="flex h-9 shrink-0 items-center gap-3 border-b border-line/70 px-4">
-        <span className="flex gap-1.5" aria-hidden>
-          {[0, 1, 2].map((d) => (
-            <span key={d} className="size-2 rounded-full bg-line" />
-          ))}
-        </span>
-        <span className="truncate font-mono text-[0.7rem] text-mute">{p.url?.replace("https://", "")}</span>
-      </div>
-      <div className="relative flex-1 overflow-hidden">
-        <div data-parallax="3" className="absolute -inset-y-[4%] inset-x-0">
-          <Image
-            src={p.image!}
-            alt={`${p.title} homepage`}
-            fill
-            sizes="(min-width: 768px) 60vw, 100vw"
-            className="object-cover object-top"
-          />
-        </div>
-      </div>
+      <Demo />
     </div>
   );
 }
