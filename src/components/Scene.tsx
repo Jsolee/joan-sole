@@ -94,6 +94,7 @@ const ditherFrag = /* glsl */ `
   uniform vec3 uInk;
   uniform vec3 uPaper;
   uniform vec3 uSignal;
+  uniform float uInkMix;
 
   float bayer2(vec2 a) { a = floor(a); return fract(a.x / 2.0 + a.y * a.y * 0.75); }
   #define bayer4(a) (bayer2(0.5 * (a)) * 0.25 + bayer2(a))
@@ -113,7 +114,8 @@ const ditherFrag = /* glsl */ `
     float halo = smoothstep(uRes.y * 0.3, 0.0, distance(c, uMouse));
     float bgInk = (0.022 + halo * 0.13) * (1.0 - s.b);
     float nameInk = texture2D(tName, uv).a * uName;
-    float ink = max(max(inkAt(s), bgInk), nameInk);
+    float objInk = max(inkAt(s), nameInk);
+    float ink = max(objInk, bgInk);
     float glow = max(max(lightAt(s), bgInk * 0.5), nameInk);
     float rim = s.g * s.b;
     float ghost = inkAt(texture2D(tScene, (cell + vec2(0.0, uShift) + 0.5) / uGrid));
@@ -131,8 +133,12 @@ const ditherFrag = /* glsl */ `
     float v = onSheet ? glow : ink;
 
     vec3 col = mix(uPaper, uInk, disc(sheet, len, aa));
-    if (abs(uShift) > 0.4 && ghost > th + 0.002) col = mix(col, uSignal, disc(0.16 + 0.2 * ghost, len, aa));
-    if (v > th + 0.002) col = mix(col, onSheet ? uPaper : uInk, disc(0.2 + 0.22 * v, len, aa));
+    // Behind text the dust prints in a pale grey, so it reads as paper texture, not as noise.
+    vec3 inkCol = mix(uPaper, uInk, uInkMix);
+    if (uInkMix > 0.6 && abs(uShift) > 0.4 && ghost > th + 0.002) col = mix(col, uSignal, disc(0.16 + 0.2 * ghost, len, aa));
+    // The paper-texture grid (bgInk) always prints soft; only the object gets full ink.
+    vec3 dotCol = onSheet ? uPaper : (objInk >= bgInk ? inkCol : mix(uPaper, inkCol, 0.4));
+    if (v > th + 0.002) col = mix(col, dotCol, disc(0.2 + 0.22 * v, len, aa));
     if (rim * 0.9 > th + 0.002) col = mix(col, uSignal, disc(0.2 + 0.22 * rim, len, aa));
 
     // A vermilion fringe rides the edge of the sheet while it clears.
@@ -286,16 +292,16 @@ async function portraitShape(n: number): Promise<Shape> {
 
 // ---------- per-state layout and motion ----------
 
-type Layout = { fx: number; fy: number; scale: number; toneMix: number; size: number };
+type Layout = { fx: number; fy: number; scale: number; toneMix: number; size: number; ink: number };
 const desktop: Record<StateName, Layout> = {
-  seed: { fx: 0.5, fy: 0.5, scale: 1, toneMix: 0, size: 1.9 },
-  knot: { fx: 0.73, fy: 0.47, scale: 1, toneMix: 0, size: 1.9 },
-  dust: { fx: 0.5, fy: 0.5, scale: 1, toneMix: 1, size: 1 },
-  portrait: { fx: 0.74, fy: 0.47, scale: 3.1, toneMix: 1, size: 1.5 },
-  layers: { fx: 0.2, fy: 0.7, scale: 0.85, toneMix: 0.75, size: 1.6 },
-  database: { fx: 0.2, fy: 0.7, scale: 0.6, toneMix: 0.75, size: 1.6 },
-  phone: { fx: 0.2, fy: 0.68, scale: 0.7, toneMix: 0.75, size: 1.6 },
-  mind: { fx: 0.2, fy: 0.7, scale: 0.75, toneMix: 0.5, size: 1.6 },
+  seed: { fx: 0.5, fy: 0.5, scale: 1, toneMix: 0, size: 1.9, ink: 1 },
+  knot: { fx: 0.73, fy: 0.47, scale: 1, toneMix: 0, size: 1.9, ink: 1 },
+  dust: { fx: 0.5, fy: 0.5, scale: 1, toneMix: 1, size: 1, ink: 0.2 },
+  portrait: { fx: 0.74, fy: 0.47, scale: 3.1, toneMix: 1, size: 1.5, ink: 1 },
+  layers: { fx: 0.2, fy: 0.7, scale: 0.85, toneMix: 0.75, size: 1.6, ink: 0.85 },
+  database: { fx: 0.2, fy: 0.7, scale: 0.6, toneMix: 0.75, size: 1.6, ink: 0.85 },
+  phone: { fx: 0.2, fy: 0.68, scale: 0.7, toneMix: 0.75, size: 1.6, ink: 0.85 },
+  mind: { fx: 0.2, fy: 0.7, scale: 0.75, toneMix: 0.5, size: 1.6, ink: 0.85 },
 };
 
 const spin = (s: StateName, t: number, mx: number, my: number, hero: number): Vec => {
@@ -479,6 +485,7 @@ export default function Scene() {
           uCurtain: { value: ctl.curtain },
           uName: { value: ctl.name },
           uShift: { value: 0 },
+          uInkMix: { value: 1 },
           uInk: { value: new THREE.Vector3(...rgb(0x17150f)) },
           uPaper: { value: new THREE.Vector3(...rgb(0xf3f0e8)) },
           uSignal: { value: new THREE.Vector3(...rgb(0xc23b1c)) },
@@ -655,8 +662,9 @@ export default function Scene() {
         lineRef.current?.setAttribute("points", pts.join(" "));
       };
 
+      const inkOf = { From: 1, To: 1 };
       const applyState = (s: StateName, t: number, which: "From" | "To") => {
-        const L = view.wide ? desktop[s] : { ...desktop.dust, ...(s === "knot" ? { fx: 0.5, fy: 0.22, scale: Math.min(0.72, camera.aspect * 1.05), toneMix: 0, size: 1.9 } : {}) };
+        const L = view.wide ? desktop[s] : { ...desktop.dust, ...(s === "knot" ? { fx: 0.5, fy: 0.22, scale: Math.min(0.72, camera.aspect * 1.05), toneMix: 0, size: 1.9, ink: 1 } : {}) };
         const [ex, ey, ez] = spin(s, t, eased.x, eased.y, heroProgress);
         euler.set(ex, ey, ez);
         m3.setFromMatrix4(m4.makeRotationFromEuler(euler));
@@ -665,6 +673,7 @@ export default function Scene() {
         u[`uScale${which}`].value = L.scale;
         u[`uToneMix${which}`].value = L.toneMix;
         u[`uSize${which}`].value = L.size;
+        inkOf[which] = L.ink;
         if (which === "From" && !sm.busy) placeHud(s, rot, off, L.scale);
       };
 
@@ -701,6 +710,8 @@ export default function Scene() {
         ditherMat.uniforms.uMouse.value.set(eased.px * dpr, (view.h - eased.py) * dpr);
         ditherMat.uniforms.uCurtain.value = ctl.curtain;
         ditherMat.uniforms.uName.value = ctl.name;
+        const e = u.uMix.value * u.uMix.value * (3 - 2 * u.uMix.value);
+        ditherMat.uniforms.uInkMix.value = inkOf.From + (inkOf.To - inkOf.From) * e;
         velocity *= 0.9;
         shift += (Math.max(-1, Math.min(1, velocity / 1800)) * 4 - shift) * 0.15;
         ditherMat.uniforms.uShift.value = Math.round(shift);
