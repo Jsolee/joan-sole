@@ -203,11 +203,13 @@ function reveals() {
   q("[data-clip]").forEach((el) =>
     gsap.fromTo(
       el,
-      { clipPath: "inset(18% 12% 18% 12% round 1.5rem)" },
+      { clipPath: "inset(10% 8% 10% 8% round 1.5rem)" },
       {
+        // Time-based, not scrubbed: a sticky card can stop before any scroll point, the reveal must still finish.
         clipPath: "inset(0% 0% 0% 0% round 0.75rem)",
-        ease: "none",
-        scrollTrigger: { trigger: el, start: "top 95%", end: "top 35%", scrub: true },
+        duration: 1.4,
+        ease: "expo.out",
+        scrollTrigger: { trigger: el, start: "top 90%", toggleActions: "play none none reverse" },
       },
     ),
   );

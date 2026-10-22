@@ -39,7 +39,7 @@ function Card({ p, i }: { p: Project; i: number }) {
           style={{ background: `radial-gradient(circle, ${p.tint}, transparent 62%)` }}
         />
 
-        <div className="gutter relative grid flex-1 grid-rows-[auto_1fr] gap-8 pb-8 pt-8 md:gap-10 md:pb-10 md:pt-24">
+        <div className="gutter relative grid flex-1 grid-rows-[auto_1fr] gap-8 pb-8 pt-8 md:grid-rows-[auto_minmax(0,1fr)] md:gap-8 md:pb-14 md:pt-20">
           <div className="grid items-end gap-5 md:grid-cols-12">
             <div className="md:col-span-7">
               <p className="flex gap-4 font-mono text-xs text-mute">
@@ -47,31 +47,13 @@ function Card({ p, i }: { p: Project; i: number }) {
                 <span>{p.kind}</span>
                 <span>{p.year}</span>
               </p>
-              <h3 translate="no" className="font-display mt-3 text-[clamp(3rem,8.5vw,8.5rem)] font-medium leading-[0.88] tracking-[-0.045em]">
+              <h3 translate="no" className="font-display mt-3 text-[clamp(3rem,min(8.5vw,14dvh),8.5rem)] font-medium leading-[0.88] tracking-[-0.045em]">
                 {p.title}
               </h3>
             </div>
-            <p className="max-w-[34ch] text-lg leading-snug text-ink/90 md:col-span-4 md:col-start-9 md:text-xl">
-              {p.summary}
-            </p>
-          </div>
-
-          <div className="grid min-h-0 gap-8 md:grid-cols-12 md:gap-10">
-            <div className="flex flex-col justify-between gap-8 md:col-span-4 md:max-lg:col-span-5">
-              <ol className="space-y-4 text-[0.95rem] leading-relaxed text-ink/75">
-                {p.notes.map((n, j) => (
-                  <li key={j} className="grid grid-cols-[2rem_1fr] border-t border-line/70 pt-3">
-                    <span className="font-mono text-xs leading-6 text-mute">{String(j + 1).padStart(2, "0")}</span>
-                    <span>{n}</span>
-                  </li>
-                ))}
-              </ol>
-              <div className="space-y-5">
-                <p className="font-mono text-xs leading-relaxed text-mute">
-                  <span className="text-ink/80">{p.role}</span>
-                  <br />
-                  {p.stack.join(" · ")}
-                </p>
+            <div className="space-y-4 md:col-span-4 md:col-start-9">
+              <p className="max-w-[34ch] text-lg leading-snug text-ink/90 md:text-xl">{p.summary}</p>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
                 {p.url && (
                   <a
                     href={p.url}
@@ -83,10 +65,28 @@ function Card({ p, i }: { p: Project; i: number }) {
                     <Arrow />
                   </a>
                 )}
+                <span className="font-mono text-xs text-ink/80">{p.role}</span>
               </div>
             </div>
+          </div>
 
-            <div className="relative max-md:order-first md:col-span-8 md:max-lg:col-span-7">
+          <div className="grid min-h-0 gap-8 md:grid-cols-12 md:gap-10">
+            <div className="flex min-h-0 flex-col justify-between gap-6 md:col-span-4 md:max-lg:col-span-5">
+              <ol className="space-y-4 text-[0.95rem] leading-relaxed text-ink/75 md:[@media(max-height:820px)]:space-y-3 md:[@media(max-height:820px)]:text-[0.85rem]">
+                {p.notes.map((n, j) => (
+                  <li
+                    key={j}
+                    className={`grid grid-cols-[2rem_1fr] border-t border-line/70 pt-3 ${j > 2 ? "md:[@media(max-height:740px)]:hidden" : ""}`}
+                  >
+                    <span className="font-mono text-xs leading-6 text-mute">{String(j + 1).padStart(2, "0")}</span>
+                    <span>{n}</span>
+                  </li>
+                ))}
+              </ol>
+              <p className="font-mono text-xs leading-relaxed text-mute">{p.stack.join(" · ")}</p>
+            </div>
+
+            <div className="relative max-md:order-first md:col-span-8 md:min-h-0 md:max-lg:col-span-7">
               <Media p={p} />
             </div>
           </div>
