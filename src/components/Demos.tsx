@@ -27,7 +27,7 @@ type Build = (
   at: (el: HTMLElement, ox?: number, oy?: number) => gsap.TweenVars,
 ) => void;
 
-function useLoop(build: Build) {
+export function useLoop(build: Build) {
   const ref = useRef<HTMLDivElement>(null);
   useGSAP(
     () => {
@@ -83,15 +83,19 @@ function useLoop(build: Build) {
   return ref;
 }
 
-function Stage({
+export function Stage({
   bg,
   children,
   loop,
+  wide = true,
 }: {
   bg: string;
   children: ReactNode;
   loop: ReturnType<typeof useLoop>;
+  wide?: boolean;
 }) {
+  // wide: a 16:10 app window with a margin; otherwise a full-bleed 4:3 scene.
+  const size = wide ? "aspect-[16/10] w-[min(94cqw,150cqh)]" : "aspect-[4/3] w-[min(100cqw,133.4cqh)]";
   return (
     <div
       ref={loop}
@@ -101,7 +105,7 @@ function Stage({
     >
       <div
         data-stage
-        className="relative aspect-[16/10] w-[min(94cqw,150cqh)] select-none [container-type:inline-size]"
+        className={`relative select-none [container-type:inline-size] ${size}`}
       >
         {children}
       </div>
@@ -109,7 +113,7 @@ function Stage({
   );
 }
 
-function Cursor({ fill = "#17150f" }: { fill?: string }) {
+export function Cursor({ fill = "#17150f" }: { fill?: string }) {
   return (
     <svg
       data-cursor

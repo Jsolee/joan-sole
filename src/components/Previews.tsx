@@ -1,4 +1,5 @@
 import type { IndexItem } from "@/content";
+import { RumiDemo, TalaiaDemo, VoiceDemo } from "./IndexDemos";
 
 // Decorative stand-ins for work that has no public screenshot. All aria-hidden.
 
@@ -65,53 +66,6 @@ export function Ticket() {
 }
 
 export function Preview({ kind }: { kind: IndexItem["preview"] }) {
-  switch (kind) {
-    case "voice":
-      return (
-        <div aria-hidden className="relative flex h-full items-center justify-center gap-[3px] bg-ink-2 px-8">
-          {Array.from({ length: 28 }, (_, i) => (
-            <span
-              key={i}
-              className="block h-[46%] w-[4px] origin-center rounded-full bg-signal"
-              style={{ animation: `bars ${0.7 + ((i * 7) % 5) * 0.12}s ease-in-out ${(i % 6) * -0.13}s infinite` }}
-            />
-          ))}
-          <span className="absolute bottom-3 left-4 font-mono text-[0.65rem] text-paper/60">call in progress · CA</span>
-        </div>
-      );
-    case "talaia":
-      return (
-        <div aria-hidden className="relative h-full overflow-hidden bg-[linear-gradient(180deg,#141729,#262c4a)]">
-          {Array.from({ length: 34 }, (_, i) => (
-            <span
-              key={i}
-              className="absolute size-[2px] rounded-full bg-paper"
-              style={{
-                left: `${(i * 37) % 100}%`,
-                top: `${(i * 23) % 62}%`,
-                animation: `twinkle ${2 + (i % 5) * 0.6}s ease-in-out ${(i % 7) * 0.3}s infinite`,
-              }}
-            />
-          ))}
-          <svg viewBox="0 0 100 30" preserveAspectRatio="none" className="absolute inset-x-0 bottom-0 h-[34%] w-full">
-            <path d="M0 30 L0 18 L12 12 L22 16 L34 8 L46 14 L58 6 L70 13 L82 9 L100 15 L100 30 Z" fill="#0c0d16" />
-          </svg>
-          <span className="absolute right-4 top-3 font-mono text-[0.65rem] text-paper/70">visibility 87</span>
-        </div>
-      );
-    case "rumi":
-      return (
-        <div aria-hidden className="relative grid h-full place-items-center bg-[#2a2433]">
-          <div className="absolute inset-0 opacity-60" style={dots("#d8c8e640", 9)} />
-          <div className="relative grid size-[42%] place-items-center rounded-[46%] bg-[#e7c9de] shadow-[inset_0_-12px_0_#d3aecb]">
-            <div className="flex gap-[18%]" style={{ width: "50%" }}>
-              {[0, 1].map((i) => (
-                <span key={i} className="block aspect-[2/3] w-[34%] rounded-full bg-ink" style={{ animation: "blink 4s infinite" }} />
-              ))}
-            </div>
-          </div>
-          <span className="absolute bottom-3 left-4 font-mono text-[0.65rem] text-paper/60">dreaming…</span>
-        </div>
-      );
-  }
+  const Demo = { talaia: TalaiaDemo, voice: VoiceDemo, rumi: RumiDemo }[kind];
+  return <Demo />;
 }

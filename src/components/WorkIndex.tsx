@@ -37,7 +37,7 @@ export default function WorkIndex() {
                     {...(item.url ? { href: item.url, target: "_blank", rel: "noreferrer" } : {})}
                     className="group block py-6 md:py-8"
                   >
-                    <div aria-hidden className="mb-5 aspect-video overflow-hidden rounded-xl border border-ink/10 md:hidden">
+                    <div aria-hidden className="mb-5 aspect-[4/3] overflow-hidden rounded-xl border border-ink/10 md:hidden">
                       <Preview kind={item.preview} />
                     </div>
                     <div className="flex items-baseline justify-between gap-6">

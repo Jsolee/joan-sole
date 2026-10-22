@@ -157,6 +157,38 @@ h3 {
     transform: translateY(100%);
   }
 }
+@keyframes meteor {
+  0%,
+  86% {
+    opacity: 0;
+    transform: rotate(24deg) translateX(0);
+  }
+  88% {
+    opacity: 1;
+  }
+  96%,
+  100% {
+    opacity: 0;
+    transform: rotate(24deg) translateX(28cqw);
+  }
+}
+@keyframes beam-sweep {
+  from {
+    transform: rotate(-40deg);
+  }
+  to {
+    transform: rotate(12deg);
+  }
+}
+@keyframes star-breathe {
+  0%,
+  100% {
+    transform: rotate(-4deg) scale(1);
+  }
+  50% {
+    transform: rotate(4deg) scale(1.08);
+  }
+}
 @keyframes twinkle {
   0%,
   100% {
